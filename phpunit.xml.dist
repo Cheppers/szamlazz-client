@@ -1,0 +1,24 @@
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    colors="true">
+
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/src/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <logging>
+        <log type="coverage-html" target="reports/human/coverage/html"/>
+        <log type="coverage-clover" target="reports/machine/coverage/coverage.xml"/>
+        <log type="coverage-text" target="php://stdout"/>
+        <log type="junit" target="reports/machine/unit/junit.xml"/>
+    </logging>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>src/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
