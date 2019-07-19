@@ -85,11 +85,6 @@ _custom:
                     file: 'reports/machine/coverage/coverage.xml'
 
 jobs:
-    php701__lint_and_test:
-        <<: *job__lint_and_test
-        docker:
-            -
-                image: 'circleci/php:7.1'
     php702__lint_and_test:
         <<: *job__lint_and_test
         docker:
@@ -103,9 +98,6 @@ jobs:
 
 workflows:
     version: 2
-    php701__lint_and_test:
-        jobs:
-            - 'php701__lint_and_test'
     php702__lint_and_test:
         jobs:
             - 'php702__lint_and_test'
