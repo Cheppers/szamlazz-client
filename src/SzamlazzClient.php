@@ -54,7 +54,6 @@ class SzamlazzClient
 
     public function getTaxPayer()
     {
-
     }
 
     protected function getUri($path)
