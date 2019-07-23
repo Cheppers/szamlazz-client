@@ -13,7 +13,7 @@ class SzamlaAgentUtil
         libxml_use_internal_errors(true);
 
         $doc = new \DOMDocument('1.0', 'utf-8');
-        $doc->loadXML($xmlContent);
+        $doc->loadXML($xmlContent->asXML());
 
         $result = libxml_get_errors();
         libxml_clear_errors();

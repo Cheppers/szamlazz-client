@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class TaxPayer
+use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
+
+class TaxPayer extends Base
 {
     const TAXPAYER_JOINT_VENTURE = 5;
 
@@ -39,7 +41,11 @@ class TaxPayer
      */
     public $requiredFields = ['taxPayerId'];
 
-    public function __construct(string $taxPayerId, int $taxPayerTypeId = self::TAXPAYER_WE_DONT_KNOW)
+    protected static $propertyMapping = [
+        'taxPayerId' => 'torzsszam',
+    ];
+
+    public function __construct(string $taxPayerId, $taxPayerTypeId = 0)
     {
         $this->taxPayerId = $taxPayerId;
         $this->taxPayerTypeId = $taxPayerTypeId;

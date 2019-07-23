@@ -29,6 +29,39 @@ class SzamlazzClient
      */
     protected $client;
 
+    /**
+     * @var string
+     */
+    protected $username = '';
+
+    /**
+     * @var string
+     */
+    protected $password = '';
+
+    /**
+     * @var string
+     */
+    protected $keychain = '';
+
+    /**
+     * @var bool
+     */
+    public $downloadPdf = true;
+
+    /**
+     * @var int
+     */
+    public $downloadCopiesCount = 0;
+
+    /**
+     * @var int
+     */
+    public $responseType = 1;
+
+    /**
+     * @var string
+     */
     public $cookieFileName = 'cookie.txt';
 
     /**
@@ -45,6 +78,24 @@ class SzamlazzClient
     }
 
     protected $baseUri = 'http://www.szamlazz.hu';
+
+    protected static $propertyMapping = [
+        'username' => 'felhasznalo',
+        'password' => 'jelszo',
+        'keychain' => 'kulcstartojelszo',
+        'downloadPdf' => 'pdfLetoltes',
+        'downloadCopiesCount' => 'szamlaLetoltesPld',
+        'valaszVerzio' => 'valaszVerzio',
+        'aggregator' => 'aggregator',
+    ];
+
+    public function setUp(string $username, string $password)
+    {
+        $this->username = $username;
+        $this->password = $password;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -69,7 +120,7 @@ class SzamlazzClient
         $this->client = $client;
     }
 
-    public function getTaxPayer(string $taxPayerId): SzamlaAgentResponse
+    public function getTaxPayer(string $taxPayerId)
     {
         $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
     }
@@ -124,19 +175,14 @@ class SzamlazzClient
             $request->init();
             $request->buildXmlData();
             $request->buildQuery();
-            $postFieldsLength = strlen($request->postFields);
 
             $response = $this->sendPost(
                 static::API_URL,
                 [
-                    'cert' => $this->getCertificationFilePath(),
-                    'headers' => [
-                        "Content-Type: multipart/form-data; boundary=$request->delim",
-                        "Content-Length: $postFieldsLength",
+                    'multipart' => [
+                        'name'     => $request->fileName,
+                        'contents' => $request->postFields,
                     ],
-                    'body' => $request->postFields,
-                    'timeout' => $request::REQUEST_TIMEOUT,
-                    'cookies' => new CookieJar(),
                 ]
             );
 
@@ -144,5 +190,111 @@ class SzamlazzClient
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    public function buildXmlData(SzamlaAgentRequest $request)
+    {
+        $settings = ['felhasznalo', 'jelszo'];
+
+        switch ($request->getXmlName()) {
+            case $request::XML_SCHEMA_CREATE_INVOICE:
+                $data = $this->buildFieldsData($request, array_merge($settings, [
+                    'eszamla',
+                    'kulcstartojelszo',
+                    'szamlaLetoltes',
+                    'szamlaLetoltesPld',
+                    'valaszVerzio',
+                    'aggregator'
+                ]));
+                break;
+            case $request::XML_SCHEMA_DELETE_PROFORMA:
+                $data = $this->buildFieldsData($request, $settings);
+                break;
+            case $request::XML_SCHEMA_CREATE_REVERSE_INVOICE:
+                $data = $this->buildFieldsData($request, array_merge($settings, [
+                    'eszamla',
+                    'kulcstartojelszo',
+                    'szamlaLetoltes',
+                    'szamlaLetoltesPld',
+                    'aggregator',
+                    'valaszVerzio'
+                ]));
+                break;
+            case $request::XML_SCHEMA_PAY_INVOICE:
+                $data = $this->buildFieldsData($request, array_merge($settings, [
+                    'szamlaszam',
+                    'additiv',
+                    'aggregator',
+                    'valaszVerzio'
+                ]));
+                break;
+            case $request::XML_SCHEMA_REQUEST_INVOICE_PDF:
+                $data = $this->buildFieldsData($request, array_merge($settings, [
+                    'szamlaszam',
+                    'rendelesSzam',
+                    'valaszVerzio'
+                ]));
+                break;
+            case $request::XML_SCHEMA_CREATE_RECEIPT:
+            case $request::XML_SCHEMA_CREATE_REVERSE_RECEIPT:
+            case $request::XML_SCHEMA_GET_RECEIPT:
+                $data = $this->buildFieldsData($request, array_merge($settings, ['pdfLetoltes']));
+                break;
+            case $request::XML_SCHEMA_SEND_RECEIPT:
+            case $request::XML_SCHEMA_TAXPAYER:
+                $data = $this->buildFieldsData($request, $settings);
+                break;
+            default:
+                throw new SzamlazzClientException(
+                    SzamlazzClientException::XML_SCHEMA_TYPE_NOT_EXISTS
+                    . ": {$request->getXmlName()}"
+                );
+        }
+        return $data;
+    }
+
+    /**
+     * Összeállítja és visszaadja az adott mezőkhöz tartozó adatokat
+     *
+     * @param SzamlaAgentRequest $request
+     * @param array $fields
+     *
+     * @return array
+     * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
+     */
+    public function buildFieldsData(SzamlaAgentRequest $request, array $fields)
+    {
+        $data = [];
+
+        foreach ($fields as $key) {
+            switch ($key) {
+                case 'felhasznalo':
+                    $value = $this->username;
+                    break;
+                case 'jelszo':
+                    $value = $this->password;
+                    break;
+                case 'kulcstartojelszo':
+                    $value = $this->keychain;
+                    break;
+                case 'szamlaLetoltes':
+                case 'pdfLetoltes':
+                    $value = $this->downloadPdf;
+                    break;
+                case 'szamlaLetoltesPld':
+                    $value = $this->downloadCopiesCount;
+                    break;
+                case 'valaszVerzio':
+                    $value = $this->responseType;
+                    break;
+                default:
+                    throw new SzamlazzClientException(SzamlazzClientException::XML_KEY_NOT_EXISTS . ": {$key}");
+            }
+
+            if (isset($value)) {
+                $data[$key] = $value;
+            }
+        }
+        return $data;
     }
 }

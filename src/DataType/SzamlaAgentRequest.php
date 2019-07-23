@@ -112,7 +112,7 @@ class SzamlaAgentRequest
         $xml = new \SimpleXMLElement($this->getXmlBase());
         $this->arrayToXML($xmlData, $xml);
 
-        $result = SzamlaAgentUtil::checkValidXml($xml->saveXML());
+        $result = SzamlaAgentUtil::checkValidXml($xml);
         if (!empty($result)) {
             throw new SzamlazzClientException(
                 SzamlazzClientException::XML_NOT_VALID . " a {$result[0]->line}. sorban: {$result[0]->message}. "
@@ -158,19 +158,17 @@ class SzamlaAgentRequest
     protected function getXmlBase(): string
     {
         $xmlName = $this->xmlName;
-        $namespace = $this->getXmlNs($xmlName);
 
         $queryData  = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
-        $queryData .= "<$xmlName xmlns=$namespace xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation=$this->getSchemaLocation($xmlName)>"
-            . PHP_EOL;
-        $queryData .= "</$xmlName>" . static::CRLF;
+        $queryData .= "<$xmlName xmlns=\"{$this->getXmlNs($xmlName)}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"{$this->getSchemaLocation($xmlName)}\">" . PHP_EOL;
+        $queryData .= '</'.$xmlName.'>' . self::CRLF;
 
         return $queryData;
     }
 
     protected function getSchemaLocation(string $xmlName): string
     {
-        return static::XML_BASE_URL . "szamla/{$xmlName} http://www.szamlazz.hu/szamla/docs/xsds/{$this->getXsdDir()}/{$xmlName}.xsd";
+        return "http://www.szamlazz.hu/szamla/docs/xsds/{$this->xsdDir}/{$xmlName}.xsd";
     }
 
     public function getXmlNs(string $xmlName): string
@@ -269,86 +267,10 @@ class SzamlaAgentRequest
     }
 
     /**
-     * Számla Agent kérés küldése a szamlazz.hu felé
-     *
-     * Először megpróbáljuk CURL-el elküldeni a kérést.
-     * Ha nem sikerül, akkor átváltunk a legacy módra.
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public function send()
-    {
-        try {
-            if (!isset($_SESSION)) {
-                session_start();
-            }
-
-            $this->init();
-            $this->buildXmlData();
-            $this->buildQuery();
-
-            $method = $this->szamlazzClient->getCallMethod();
-            switch ($method) {
-                case self::CALL_METHOD_AUTO:
-                    $response = $this->checkConnection();
-                    break;
-                case self::CALL_METHOD_CURL:
-                    $response = $this->makeCurlCall();
-                    break;
-                case self::CALL_METHOD_LEGACY:
-                    $response = $this->makeLegacyCall();
-                    break;
-                default:
-                    throw new SzamlaAgentException(SzamlaAgentException::CALL_TYPE_NOT_EXISTS . ": {$method}");
-            }
-            return $response;
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    /**
      * @return string
      */
     public function getCookieFilePath()
     {
         return SzamlaAgentUtil::getBasePath() . DIRECTORY_SEPARATOR . $this->szamlazzClient->cookieFileName;
-    }
-
-    /**
-     * Visszaadja az XML séma típusát
-     * (számla, nyugta, adózó)
-     *
-     * @return string
-     * @throws SzamlaAgentException
-     */
-    private function getXmlSchemaType()
-    {
-        switch ($this->getXmlName()) {
-            case self::XML_SCHEMA_CREATE_INVOICE:
-            case self::XML_SCHEMA_CREATE_REVERSE_INVOICE:
-            case self::XML_SCHEMA_PAY_INVOICE:
-            case self::XML_SCHEMA_REQUEST_INVOICE_PDF:
-                $type = Document::DOCUMENT_TYPE_INVOICE;
-                break;
-            case self::XML_SCHEMA_DELETE_PROFORMA:
-                $type = Document::DOCUMENT_TYPE_PROFORMA;
-                break;
-            case self::XML_SCHEMA_CREATE_RECEIPT:
-            case self::XML_SCHEMA_CREATE_REVERSE_RECEIPT:
-            case self::XML_SCHEMA_SEND_RECEIPT:
-            case self::XML_SCHEMA_GET_RECEIPT:
-                $type = Document::DOCUMENT_TYPE_RECEIPT;
-                break;
-            case self::XML_SCHEMA_TAXPAYER:
-                $type = 'taxpayer';
-                break;
-            default:
-                throw new SzamlaAgentException(
-                    SzamlaAgentException::XML_SCHEMA_TYPE_NOT_EXISTS . ": {$this->getXmlName()}"
-                );
-        }
-        return $type;
     }
 }
