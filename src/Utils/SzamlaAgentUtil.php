@@ -24,9 +24,11 @@ class SzamlaAgentUtil
     public static function formatXml(\SimpleXMLElement $simpleXMLElement)
     {
         $xmlDocument = new \DOMDocument('1.0');
+        $xmlDocument->createElement('xml');
         $xmlDocument->preserveWhiteSpace = false;
         $xmlDocument->formatOutput = true;
         $xmlDocument->loadXML($simpleXMLElement->asXML());
+
         return $xmlDocument;
     }
 

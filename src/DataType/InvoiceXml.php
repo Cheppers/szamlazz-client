@@ -4,26 +4,34 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class InvoiceXml
-{
+class InvoiceXml extends Base {
 
     /**
      * @var string
      */
-    protected $invoiceId;
+    public $invoiceId;
+
+    /**
+     * @var string
+     */
+    public $orderId;
 
     /**
      * @var bool
      */
     public $pdf;
 
-    public function buildXmlData(SzamlaAgentRequest $request)
-    {
-        return [
-            'felhasznalo' => '',
-            'jelszo' => '',
-            'szamlaszam' => '',
-            'pdf' => 'true',
-        ];
-    }
+    /**
+     * {@inheritdoc}
+     */
+    protected $parents = false;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'invoiceId' => 'szamlaszam',
+        'orderId' => 'rendelesszam',
+        'pdf' => 'pdf',
+    ];
 }
