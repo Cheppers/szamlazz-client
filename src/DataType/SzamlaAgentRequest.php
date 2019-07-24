@@ -15,17 +15,9 @@ class SzamlaAgentRequest
 
     const CRLF = "\r\n";
 
-    const XML_BASE_URL = 'http://www.szamlazz.hu/';
-
     const SESSION_CONNECTION_TYPE = 'connectionType';
 
     const REQUEST_TIMEOUT = 30;
-
-    const CALL_METHOD_LEGACY = 1;
-
-    const CALL_METHOD_CURL = 2;
-
-    const CALL_METHOD_AUTO = 3;
 
     const XML_SCHEMA_CREATE_INVOICE = 'xmlszamla';
 
@@ -34,6 +26,8 @@ class SzamlaAgentRequest
     const XML_SCHEMA_PAY_INVOICE = 'xmlszamlakifiz';
 
     const XML_SCHEMA_REQUEST_INVOICE_PDF = 'xmlszamlapdf';
+
+    const XML_SCHEMA_REQUEST_INVOICE_XML = 'xmlszamlaxml';
 
     const XML_SCHEMA_CREATE_RECEIPT = 'xmlnyugtacreate';
 
@@ -83,6 +77,11 @@ class SzamlaAgentRequest
     public $fileName;
 
     /**
+     * @var string;
+     */
+    public $xmlFileName = '';
+
+    /**
      * @var string
      */
     public $delim;
@@ -107,13 +106,10 @@ class SzamlaAgentRequest
     {
         $this->setXmlFileData($this->type);
 
-        $xmlData = $this->entity->buildXmlData($this);
-        $xmlData[] = [
-            'beallitasok'
-        ]
+        $fullXmlData = $this->entity->buildXmlData($this);
 
         $xml = new \SimpleXMLElement($this->getXmlBase());
-        $this->arrayToXML($xmlData, $xml);
+        $this->arrayToXML($fullXmlData, $xml);
 
         $result = SzamlaAgentUtil::checkValidXml($xml);
         if (!empty($result)) {
@@ -131,26 +127,18 @@ class SzamlaAgentRequest
     protected function arrayToXML(array $xmlData, \SimpleXMLElement &$xmlFields)
     {
         foreach ($xmlData as $key => $value) {
+            if (!is_array($value)) {
+                $xmlFields->addChild($key, $value);
+            }
             if (is_array($value)) {
-                $fieldKey = $key;
-                if (strpos($key, "item") !== false) $fieldKey = 'tetel';
-                if (strpos($key, "note") !== false) $fieldKey = 'kifizetes';
-                $subNode = $xmlFields->addChild("$fieldKey");
-                $this->arrayToXML($value, $subNode);
-            } else {
-                if (is_bool($value)) {
-                    $value = ($value) ? 'true' : 'false';
-                } else if(!$this->isCData()) {
-                    $value = htmlspecialchars("$value");
-                }
-
-                if ($this->isCData()) {
-                    $xmlFields->addChildWithCData("$key", $value);
-                } else {
-                    $xmlFields->addChild($key, $value);
+                $xmlArray = $xmlFields->addChild($key);
+                foreach ($value as $ik => $iv) {
+                    $xmlArray->addChild($ik, $iv);
                 }
             }
         }
+
+        return;
     }
 
     /**
@@ -163,27 +151,31 @@ class SzamlaAgentRequest
         if ($xml->save($fileName) === false) {
             throw new SzamlazzClientException(SzamlazzClientException::FILE_CREATION_FAILED);
         }
+
+        $this->xmlFileName = $fileName;
     }
 
     protected function getXmlBase(): string
     {
         $xmlName = $this->xmlName;
 
-        $queryData  = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
-        $queryData .= "<$xmlName xmlns=\"{$this->getXmlNs($xmlName)}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"{$this->getSchemaLocation($xmlName)}\">" . PHP_EOL;
-        $queryData .= '</'.$xmlName.'>' . self::CRLF;
+        $queryData = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL
+            . '<' . $xmlName . ' xmlns="' . $this->getXmlNs($xmlName) . '"'
+            . ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            . ' xsi:schemaLocation="' . $this->getSchemaLocation($xmlName) . '">' . PHP_EOL
+            . '</'.$xmlName.'>' . PHP_EOL;
 
         return $queryData;
     }
 
     protected function getSchemaLocation(string $xmlName): string
     {
-        return "http://www.szamlazz.hu/szamla/docs/xsds/{$this->xsdDir}/{$xmlName}.xsd";
+        return "http://www.szamlazz.hu/{$xmlName} http://www.szamlazz.hu/docs/xsds/$this->xsdDir/{$xmlName}.xsd";
     }
 
     public function getXmlNs(string $xmlName): string
     {
-        return self::XML_BASE_URL . "{$xmlName}";
+        return "http://www.szamlazz.hu/{$xmlName}";
     }
 
     public function buildQuery()
@@ -235,6 +227,11 @@ class SzamlaAgentRequest
             case 'requestInvoicePDF':
                 $fileName =  'action-szamla_agent_pdf';
                 $xmlName  = self::XML_SCHEMA_REQUEST_INVOICE_PDF;
+                $xsdDir  = 'agentpdf';
+                break;
+            case 'requestInvoiceXML':
+                $fileName =  'action-szamla_agent_xml';
+                $xmlName  = self::XML_SCHEMA_REQUEST_INVOICE_XML;
                 $xsdDir  = 'agentpdf';
                 break;
             case 'generateReceipt':

@@ -9,6 +9,8 @@ use Cheppers\SzamlazzClient\DataType\SzamlaAgentResponse;
 use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class SzamlazzClient
 {
@@ -17,7 +19,7 @@ class SzamlazzClient
 
     const CHARSET = 'utf-8';
 
-    const API_URL = 'https://www.szamlazz.hu/szamla/';
+    const API_URL = 'szamla/';
 
     const CERTIFICATION_PATH = './cert';
 
@@ -31,12 +33,12 @@ class SzamlazzClient
     /**
      * @var string
      */
-    protected $username = '';
+    public $username = '';
 
     /**
      * @var string
      */
-    protected $password = '';
+    public $password = '';
 
     /**
      * @var string
@@ -76,7 +78,7 @@ class SzamlazzClient
         return $this->response;
     }
 
-    protected $baseUri = 'http://www.szamlazz.hu';
+    protected $baseUri = 'https://www.szamlazz.hu';
 
     protected static $propertyMapping = [
         'username' => 'felhasznalo',
@@ -121,7 +123,7 @@ class SzamlazzClient
 
     public function getTaxPayer(string $taxPayerId)
     {
-        $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
+        return $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
     }
 
     protected function getUri($path)
@@ -130,7 +132,7 @@ class SzamlazzClient
     }
 
     /**
-     * @return $this
+     * @return \Psr\Http\Message\MessageInterface
      */
     protected function sendGet($path, array $options = [])
     {
@@ -138,7 +140,7 @@ class SzamlazzClient
     }
 
     /**
-     * @return $this
+     * @return \Psr\Http\Message\ResponseInterface
      */
     protected function sendPost($path, array $options = [])
     {
@@ -147,14 +149,13 @@ class SzamlazzClient
 
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @return $this
+     * @return \Psr\Http\Message\ResponseInterface
      */
     protected function sendRequest($method, $path, array $options = [])
     {
         $uri = $this->getUri($path);
-        $this->response = $this->client->request($method, $uri, $options);
 
-        return $this;
+        return $this->client->request($method, $uri, $options);
     }
 
     public function getCertificationFilePath(): string
@@ -162,28 +163,28 @@ class SzamlazzClient
         return SzamlaAgentUtil::getAbsPath(static::CERTIFICATION_PATH, static::CERTIFICATION_FILENAME);
     }
 
-    public function sendSzamlaAgentRequest(string $type, object $entity)
+    public function sendSzamlaAgentRequest(string $type, object $entity): ResponseInterface
     {
         $request = new SzamlaAgentRequest($this, $type, $entity);
 
         try {
-            if (!isset($_SESSION)) {
-                session_start();
-            }
-
             $request->init();
             $request->buildXmlData();
             $request->buildQuery();
 
             $response = $this->sendPost(
-                static::API_URL,
+                self::API_URL,
                 [
                     'multipart' => [
-                        'name'     => $request->fileName,
-                        'contents' => fopen('request-xmltaxpayer-taxpayer-20190723150223.xml', 'r'),
+                        [
+                            'name'     => $request->fileName,
+                            'contents' => fopen($request->xmlFileName, 'r'),
+                        ],
                     ],
                 ]
             );
+
+            unlink($request->xmlFileName);
 
             return $response;
         } catch (\Exception $e) {
