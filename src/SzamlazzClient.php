@@ -9,12 +9,11 @@ use Cheppers\SzamlazzClient\DataType\SzamlaAgentResponse;
 use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Cookie\CookieJar;
 
 class SzamlazzClient
 {
 
-    const XML_FILE_SAVE_PATH = './xmls';
+    const XML_FILE_SAVE_PATH = 'xmls';
 
     const CHARSET = 'utf-8';
 
@@ -181,7 +180,7 @@ class SzamlazzClient
                 [
                     'multipart' => [
                         'name'     => $request->fileName,
-                        'contents' => $request->postFields,
+                        'contents' => fopen('request-xmltaxpayer-taxpayer-20190723150223.xml', 'r'),
                     ],
                 ]
             );

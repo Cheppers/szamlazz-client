@@ -108,6 +108,9 @@ class SzamlaAgentRequest
         $this->setXmlFileData($this->type);
 
         $xmlData = $this->entity->buildXmlData($this);
+        $xmlData[] = [
+            'beallitasok'
+        ]
 
         $xml = new \SimpleXMLElement($this->getXmlBase());
         $this->arrayToXML($xmlData, $xml);
@@ -128,18 +131,25 @@ class SzamlaAgentRequest
     protected function arrayToXML(array $xmlData, \SimpleXMLElement &$xmlFields)
     {
         foreach ($xmlData as $key => $value) {
-            if (!is_array($value)) {
-                continue;
+            if (is_array($value)) {
+                $fieldKey = $key;
+                if (strpos($key, "item") !== false) $fieldKey = 'tetel';
+                if (strpos($key, "note") !== false) $fieldKey = 'kifizetes';
+                $subNode = $xmlFields->addChild("$fieldKey");
+                $this->arrayToXML($value, $subNode);
+            } else {
+                if (is_bool($value)) {
+                    $value = ($value) ? 'true' : 'false';
+                } else if(!$this->isCData()) {
+                    $value = htmlspecialchars("$value");
+                }
+
+                if ($this->isCData()) {
+                    $xmlFields->addChildWithCData("$key", $value);
+                } else {
+                    $xmlFields->addChild($key, $value);
+                }
             }
-            $fieldKey = $key;
-            if (mb_strpos($key, "item") !== false) {
-                $fieldKey = 'tetel';
-            }
-            if (mb_strpos($key, "note") !== false) {
-                $fieldKey = 'kifizetes';
-            }
-            $subNode = $xmlFields->addChild("$fieldKey");
-            $this->arrayToXML($value, $subNode);
         }
     }
 
