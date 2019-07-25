@@ -9,6 +9,8 @@ use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
 class SzamlazzClient
 {
@@ -43,6 +45,8 @@ class SzamlazzClient
      * @var int
      */
     public $downloadCopiesCount = 0;
+
+    protected $logger;
 
     /**
      * @var int
@@ -100,9 +104,10 @@ class SzamlazzClient
         return $this;
     }
 
-    public function __construct(ClientInterface $client)
+    public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
         $this->client = $client;
+        $this->logger = $logger;
     }
 
     /**
@@ -119,7 +124,7 @@ class SzamlazzClient
         $data->loadXML($response->getBody()->getContents());
 
         if (!SzamlaAgentUtil::isResponseValid($data)) {
-            return $this->xmlDisplayErrors();
+            $this->logXmlErrors();
         }
     }
 
@@ -180,45 +185,21 @@ class SzamlazzClient
         }
     }
 
-    protected function xmlDisplayError($error)
-    {
-        $return = "<br/>\n";
-        switch ($error->level) {
-            case LIBXML_ERR_WARNING:
-                $return .= "<b>Warning $error->code</b>: ";
-                break;
-            case LIBXML_ERR_ERROR:
-                $return .= "<b>Error $error->code</b>: ";
-                break;
-            case LIBXML_ERR_FATAL:
-                $return .= "<b>Fatal Error $error->code</b>: ";
-                break;
-        }
-        $return .= trim($error->message);
-        if ($error->file) {
-            $return .=    " in <b>$error->file</b>";
-        }
-        $return .= " on line <b>$error->line</b>\n";
-
-        return $return;
-    }
-
-    protected function xmlDisplayErrors()
+    protected function logXmlErrors()
     {
         $errors = libxml_get_errors();
-        $error = '';
         foreach ($errors as $error) {
-            $error .= $this->xmlDisplayError($error);
+            $this->logger->error($error->message);
         }
         libxml_clear_errors();
-
-        return $error;
     }
 
     public function validateResponse(\DOMDocument $doc)
     {
         if (!SzamlaAgentUtil::isResponseValid($doc)) {
-            return $this->xmlDisplayErrors();
+            $this->logXmlErrors();
+
+            return false;
         }
 
         return true;
