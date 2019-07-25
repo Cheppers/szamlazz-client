@@ -55,5 +55,4 @@ class SzamlaAgentResponse
     /**
      * @var string
      */
-    private $xmlSchemaType;
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
-
 class TaxPayer extends Base
 {
     const TAXPAYER_JOINT_VENTURE = 5;

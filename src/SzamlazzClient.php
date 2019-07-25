@@ -5,25 +5,14 @@ declare(strict_types=1);
 namespace Cheppers\SzamlazzClient;
 
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
-use Cheppers\SzamlazzClient\DataType\SzamlaAgentResponse;
 use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 
 class SzamlazzClient
 {
-
-    const XML_FILE_SAVE_PATH = 'xmls';
-
-    const CHARSET = 'utf-8';
-
     const API_URL = 'szamla/';
-
-    const CERTIFICATION_PATH = './cert';
-
-    const CERTIFICATION_FILENAME = 'cacert.pem';
 
     /**
      * @var \GuzzleHttp\ClientInterface
@@ -59,11 +48,6 @@ class SzamlazzClient
      * @var int
      */
     public $responseType = 1;
-
-    /**
-     * @var string
-     */
-    public $cookieFileName = 'cookie.txt';
 
     /**
      * @var \Psr\Http\Message\ResponseInterface
@@ -121,9 +105,22 @@ class SzamlazzClient
         $this->client = $client;
     }
 
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Exception
+     */
     public function getTaxPayer(string $taxPayerId)
     {
-        return $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
+        $response = $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
+
+        libxml_use_internal_errors(true);
+
+        $data = new \DOMDocument();
+        $data->loadXML($response->getBody()->getContents());
+
+        if (!SzamlaAgentUtil::isResponseValid($data)) {
+            return $this->xmlDisplayErrors();
+        }
     }
 
     protected function getUri($path)
@@ -158,19 +155,12 @@ class SzamlazzClient
         return $this->client->request($method, $uri, $options);
     }
 
-    public function getCertificationFilePath(): string
-    {
-        return SzamlaAgentUtil::getAbsPath(static::CERTIFICATION_PATH, static::CERTIFICATION_FILENAME);
-    }
-
     public function sendSzamlaAgentRequest(string $type, object $entity): ResponseInterface
     {
         $request = new SzamlaAgentRequest($this, $type, $entity);
 
         try {
-            $request->init();
-            $request->buildXmlData();
-            $request->buildQuery();
+            $xml = $request->buildXmlData();
 
             $response = $this->sendPost(
                 self::API_URL,
@@ -178,13 +168,11 @@ class SzamlazzClient
                     'multipart' => [
                         [
                             'name'     => $request->fileName,
-                            'contents' => fopen($request->xmlFileName, 'r'),
+                            'contents' => fopen('data:text/plain,' . urlencode($xml), 'rb'),
                         ],
                     ],
                 ]
             );
-
-            unlink($request->xmlFileName);
 
             return $response;
         } catch (\Exception $e) {
@@ -192,109 +180,47 @@ class SzamlazzClient
         }
     }
 
-    public function buildXmlData(SzamlaAgentRequest $request)
+    protected function xmlDisplayError($error)
     {
-        $settings = ['felhasznalo', 'jelszo'];
-
-        switch ($request->getXmlName()) {
-            case $request::XML_SCHEMA_CREATE_INVOICE:
-                $data = $this->buildFieldsData($request, array_merge($settings, [
-                    'eszamla',
-                    'kulcstartojelszo',
-                    'szamlaLetoltes',
-                    'szamlaLetoltesPld',
-                    'valaszVerzio',
-                    'aggregator'
-                ]));
+        $return = "<br/>\n";
+        switch ($error->level) {
+            case LIBXML_ERR_WARNING:
+                $return .= "<b>Warning $error->code</b>: ";
                 break;
-            case $request::XML_SCHEMA_DELETE_PROFORMA:
-                $data = $this->buildFieldsData($request, $settings);
+            case LIBXML_ERR_ERROR:
+                $return .= "<b>Error $error->code</b>: ";
                 break;
-            case $request::XML_SCHEMA_CREATE_REVERSE_INVOICE:
-                $data = $this->buildFieldsData($request, array_merge($settings, [
-                    'eszamla',
-                    'kulcstartojelszo',
-                    'szamlaLetoltes',
-                    'szamlaLetoltesPld',
-                    'aggregator',
-                    'valaszVerzio'
-                ]));
+            case LIBXML_ERR_FATAL:
+                $return .= "<b>Fatal Error $error->code</b>: ";
                 break;
-            case $request::XML_SCHEMA_PAY_INVOICE:
-                $data = $this->buildFieldsData($request, array_merge($settings, [
-                    'szamlaszam',
-                    'additiv',
-                    'aggregator',
-                    'valaszVerzio'
-                ]));
-                break;
-            case $request::XML_SCHEMA_REQUEST_INVOICE_PDF:
-                $data = $this->buildFieldsData($request, array_merge($settings, [
-                    'szamlaszam',
-                    'rendelesSzam',
-                    'valaszVerzio'
-                ]));
-                break;
-            case $request::XML_SCHEMA_CREATE_RECEIPT:
-            case $request::XML_SCHEMA_CREATE_REVERSE_RECEIPT:
-            case $request::XML_SCHEMA_GET_RECEIPT:
-                $data = $this->buildFieldsData($request, array_merge($settings, ['pdfLetoltes']));
-                break;
-            case $request::XML_SCHEMA_SEND_RECEIPT:
-            case $request::XML_SCHEMA_TAXPAYER:
-                $data = $this->buildFieldsData($request, $settings);
-                break;
-            default:
-                throw new SzamlazzClientException(
-                    SzamlazzClientException::XML_SCHEMA_TYPE_NOT_EXISTS
-                    . ": {$request->getXmlName()}"
-                );
         }
-        return $data;
+        $return .= trim($error->message);
+        if ($error->file) {
+            $return .=    " in <b>$error->file</b>";
+        }
+        $return .= " on line <b>$error->line</b>\n";
+
+        return $return;
     }
 
-    /**
-     * Összeállítja és visszaadja az adott mezőkhöz tartozó adatokat
-     *
-     * @param SzamlaAgentRequest $request
-     * @param array $fields
-     *
-     * @return array
-     * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
-     */
-    public function buildFieldsData(SzamlaAgentRequest $request, array $fields)
+    protected function xmlDisplayErrors()
     {
-        $data = [];
-
-        foreach ($fields as $key) {
-            switch ($key) {
-                case 'felhasznalo':
-                    $value = $this->username;
-                    break;
-                case 'jelszo':
-                    $value = $this->password;
-                    break;
-                case 'kulcstartojelszo':
-                    $value = $this->keychain;
-                    break;
-                case 'szamlaLetoltes':
-                case 'pdfLetoltes':
-                    $value = $this->downloadPdf;
-                    break;
-                case 'szamlaLetoltesPld':
-                    $value = $this->downloadCopiesCount;
-                    break;
-                case 'valaszVerzio':
-                    $value = $this->responseType;
-                    break;
-                default:
-                    throw new SzamlazzClientException(SzamlazzClientException::XML_KEY_NOT_EXISTS . ": {$key}");
-            }
-
-            if (isset($value)) {
-                $data[$key] = $value;
-            }
+        $errors = libxml_get_errors();
+        $error = '';
+        foreach ($errors as $error) {
+            $error .= $this->xmlDisplayError($error);
         }
-        return $data;
+        libxml_clear_errors();
+
+        return $error;
+    }
+
+    public function validateResponse(\DOMDocument $doc)
+    {
+        if (!SzamlaAgentUtil::isResponseValid($doc)) {
+            return $this->xmlDisplayErrors();
+        }
+
+        return true;
     }
 }
