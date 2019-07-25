@@ -6,6 +6,16 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 class QueryReceipt extends Base
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'downloadPdf' => 'pdfLetoltes',
+        'receiptId' => 'nyugtaszam',
+        'pdfScheme' => 'pdfSablon',
+        'settings' => 'beallitasok',
+        'header' => 'fejlec',
+    ];
 
     /**
      * @var bool
@@ -31,15 +41,4 @@ class QueryReceipt extends Base
      * @var string[]
      */
     public $header;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static $propertyMapping = [
-        'downloadPdf' => 'pdfLetoltes',
-        'receiptId' => 'nyugtaszam',
-        'pdfScheme' => 'pdfSablon',
-        'settings' => 'beallitasok',
-        'header' => 'fejlec',
-    ];
 }

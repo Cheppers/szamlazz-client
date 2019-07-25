@@ -4,18 +4,38 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
+use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\SzamlazzClientException;
 
 class Invoice extends Base
 {
 
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'xmlszamla';
+
+    /**
+     * {@inheritdoc}
+     */
     protected static $propertyMapping = [
         'settings' => 'beallitasok',
-        'header' => 'fejlec',
-        'items' => 'tetelek',
-        'buyer' => 'elado',
-        'seller' => 'vevo',
-        'waybill' => 'fuvarlevel',
+        'header'   => 'fejlec',
+        'buyer'    => 'elado',
+        'seller'   => 'vevo',
+        'waybill'  => 'fuvarlevel',
+        'items'    => 'tetelek',
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'settings',
+        'header',
+        'buyer',
+        'seller',
+        'items',
     ];
 
     const INVOICE_TYPE_P_INVOICE = 1;
@@ -28,7 +48,20 @@ class Invoice extends Base
 
     const CREDIT_NOTES_LIMIT = 5;
 
+    /**
+     * @var \Cheppers\SzamlazzClient\DataType\Settings
+     */
+    public $settings;
+
+    /**
+     * @var \Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader
+     */
     public $header;
+
+    /**
+     * @var \Cheppers\SzamlazzClient\DataType\Buyer
+     */
+    public $buyer;
 
     /**
      * @var \Cheppers\SzamlazzClient\DataType\Seller
@@ -36,26 +69,14 @@ class Invoice extends Base
     public $seller;
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Buyer
+     * @var \Cheppers\SzamlazzClient\DataType\Waybill\Waybill
      */
-    public $buyer;
-
     public $waybill;
 
     /**
-     * @var array
+     * @var \Cheppers\SzamlazzClient\DataType\Item[]
      */
     public $items = [];
-
-    /**
-     * @var array
-     */
-    public $creditNotes = [];
-
-    /**
-     * @var bool
-     */
-    public $additive = true;
 
     public function __construct($type = self::INVOICE_TYPE_P_INVOICE)
     {
@@ -77,13 +98,13 @@ class Invoice extends Base
                     'elado',
                     'vevo',
                     'fuvarlevel',
-                    'tetelek'
+                    'tetelek',
                 ]);
                 break;
             case $request::XML_SCHEMA_DELETE_PROFORMA:
                 $data = $this->buildFieldsData($request, [
                     'beallitasok',
-                    'fejlec'
+                    'fejlec',
                 ]);
                 break;
             case $request::XML_SCHEMA_CREATE_REVERSE_INVOICE:
@@ -91,7 +112,7 @@ class Invoice extends Base
                     'beallitasok',
                     'fejlec',
                     'elado',
-                    'vevo'
+                    'vevo',
                 ]);
                 break;
             case $request::XML_SCHEMA_PAY_INVOICE:

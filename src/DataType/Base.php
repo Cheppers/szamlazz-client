@@ -6,11 +6,15 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 abstract class Base
 {
-    /**
-     * @var bool|string[]
-     */
-    protected $parents = false;
 
+    /**
+     * @var string
+     */
+    protected $complexTypeName;
+
+    /**
+     * @var string[]
+     */
     protected static $propertyMapping = [];
 
     /**

@@ -13,8 +13,6 @@ class SzamlaAgentRequest
 
     const HTTP_OK = 200;
 
-    const CRLF = "\r\n";
-
     const SESSION_CONNECTION_TYPE = 'connectionType';
 
     const REQUEST_TIMEOUT = 30;

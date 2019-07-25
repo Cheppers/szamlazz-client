@@ -4,23 +4,43 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class BuyerLedger
+class BuyerLedger extends Base
 {
 
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    public $buyerId = '';
+    protected $complexTypeName = 'vevoFokonyvTipus';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'bookingDate'         => 'konyvelesDatum',
+        'buyerId'             => 'vevoAzonosito',
+        'buyerLedgerNumber'   => 'vevoFokonyviSzam',
+        'continousCompletion' => 'folyamatosTelj',
+    ];
+
+    /**
+     * @var \DateTime
+     */
+    public $bookingDate;
 
     /**
      * @var string
      */
-    public $bookingDate = '';
+    public $buyerId;
 
     /**
      * @var string
      */
-    public $buyerLedgerNumber = '';
+    public $buyerLedgerNumber;
+
+    /**
+     * @var bool
+     */
+    public $continuousCompletion;
 
     /**
      * @var boolean

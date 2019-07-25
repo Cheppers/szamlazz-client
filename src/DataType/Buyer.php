@@ -4,13 +4,49 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class Buyer
+class Buyer extends Base
 {
 
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    public $id = '';
+    protected $complexTypeName = 'vevo';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'name'          => 'nev',
+        'country'       => 'orszag',
+        'zip'           => 'irsz',
+        'city'          => 'telepules',
+        'address'       => 'cim',
+        'email'         => 'email',
+        'sendEmail'     => 'sendEmail',
+        'taxPayer'      => 'adoalany',
+        'taxNumber'     => 'adoszam',
+        'taxNumberEU'   => 'adoszamEU',
+        'postalName'    => 'postazasiNev',
+        'postalCountry' => 'postazasiOrszag',
+        'postalZip'     => 'postazasiIrsz',
+        'postalCity'    => 'postazasiTelepules',
+        'postalAddress' => 'postazasiCim',
+        'buyerLedger'   => 'vevoFokonyv',
+        'id'            => 'azonosito',
+        'signatoryName' => 'alairoNeve',
+        'phoneNumber'   => 'telefonszam',
+        'comment'       => 'megjegyzes',
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'name',
+        'zip',
+        'city',
+        'address',
+    ];
 
     /**
      * @var string
@@ -25,7 +61,7 @@ class Buyer
     /**
      * @var string
      */
-    public $zipCode;
+    public $zip;
 
     /**
      * @var string
@@ -40,67 +76,77 @@ class Buyer
     /**
      * @var string
      */
-    public $email = '';
+    public $email;
+
+    /**
+     * @var bool
+     */
+    public $sendEmail;
 
     /**
      * @var int
      */
-    public $taxPayerTypeId = 0;
+    public $taxPayer;
 
     /**
      * @var string
      */
-    public $taxNumber = '';
+    public $taxNumber;
 
     /**
      * @var string
      */
-    public $taxNumberEU = '';
+    public $taxNumberEU;
 
     /**
      * @var string
      */
-    public $postalName = '';
+    public $postalName;
 
     /**
      * @var string
      */
-    public $postalCountry = '';
+    public $postalCountry;
 
     /**
      * @var string
      */
-    public $postalZipCode = '';
+    public $postalZip;
 
     /**
      * @var string
      */
-    public $postalCity = '';
+    public $postalCity;
 
     /**
      * @var string
      */
-    public $postalAddress = '';
+    public $postalAddress;
 
     /**
-     * @var BuyerLedger
+     * @var \Cheppers\SzamlazzClient\DataType\BuyerLedger
      */
-    public $ledgerBuyerData;
-
-    /**
-     * @var string
-     */
-    public $signatoryName = '';
+    public $buyerLedger;
 
     /**
      * @var string
      */
-    public $phone = '';
+    public $id;
 
     /**
      * @var string
      */
-    public $comment = '';
+    public $signatoryName;
+
+    /**
+     * @var string
+     */
+    public $phoneNumber;
+
+    /**
+     * @var string
+     */
+    public $comment;
 
     public function __construct(string $name, string $country, string $zipCode, string $city, string $address)
     {

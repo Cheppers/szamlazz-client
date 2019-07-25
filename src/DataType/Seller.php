@@ -4,13 +4,25 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class Seller
+class Seller extends Base
 {
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'bank'              => 'bank',
+        'bankAccountNumber' => 'bankszamlaszam',
+        'emailReplyto'      => 'emailReplyto',
+        'emailSubject'      => 'emailTargy',
+        'emailBody'         => 'emailSzoveg',
+        'signerName'        => 'alairoNeve',
+    ];
 
     /**
      * @var string
      */
-    public $bankName;
+    public $bank;
 
     /**
      * @var string
@@ -20,22 +32,22 @@ class Seller
     /**
      * @var string
      */
-    public $emailReplyTo = '';
+    public $emailReplyto;
 
     /**
      * @var string
      */
-    public $emailSubject = '';
+    public $emailSubject;
 
     /**
      * @var string
      */
-    public $emailContent = '';
+    public $emailBody;
 
     /**
      * @var string
      */
-    public $signatoryName = '';
+    public $signerName;
 
     public function __construct(string $bankName, string $bankAccountNumber)
     {
