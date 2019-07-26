@@ -88,7 +88,7 @@ class Invoice extends Base
     /**
      * {@inheritdoc}
      */
-    public function buildXmlData(SzamlaAgentRequest $request)
+    public function buildXmlData(?SzamlaAgentRequest $request = null)
     {
         switch ($request->xmlName) {
             case $request::XML_SCHEMA_CREATE_INVOICE:

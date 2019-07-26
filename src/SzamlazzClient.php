@@ -9,7 +9,6 @@ use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
 class SzamlazzClient
