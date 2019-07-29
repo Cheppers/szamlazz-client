@@ -24,7 +24,21 @@ abstract class Base
      */
     protected $requiredFields = [];
 
-    public function buildXmlData()
+    public static function __set_state($values)
+    {
+        $instance = new static();
+
+        foreach ($values as $key => $value) {
+            if (!property_exists($instance, $key)) {
+                continue;
+            }
+            $instance->{$key} = $value;
+        }
+
+        return $instance;
+    }
+
+    public function exportData(): array
     {
         $data = [];
         foreach (static::$propertyMapping as $internal => $external) {
@@ -33,7 +47,7 @@ abstract class Base
                 continue;
             }
 
-            $data[$external] = $value;
+            $data[$this->complexTypeName][$external] = $value;
         }
 
         return $data;

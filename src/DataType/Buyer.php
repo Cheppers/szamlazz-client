@@ -147,13 +147,4 @@ class Buyer extends Base
      * @var string
      */
     public $comment;
-
-    public function __construct(string $name, string $country, string $zipCode, string $city, string $address)
-    {
-        $this->name = $name;
-        $this->country = $country;
-        $this->zipCode = $zipCode;
-        $this->city = $city;
-        $this->address = $address;
-    }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient;
 
+use Cheppers\SzamlazzClient\DataType\Invoice;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
+use Cheppers\SzamlazzClient\DataType\Settings;
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
 use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
@@ -22,68 +24,16 @@ class SzamlazzClient
     protected $client;
 
     /**
-     * @var string
+     * @var \Cheppers\SzamlazzClient\DataType\Settings
      */
-    protected $apiKey;
+    public $settings;
 
     /**
-     * @var string
+     * @var \Psr\Log\LoggerInterface
      */
-    protected $keychain = '';
-
-    /**
-     * @var bool
-     */
-    public $downloadPdf = true;
-
-    /**
-     * @var int
-     */
-    public $downloadCopiesCount = 0;
-
     protected $logger;
 
-    /**
-     * @var int
-     */
-    public $responseType = 1;
-
-    /**
-     * @var \Psr\Http\Message\ResponseInterface
-     */
-    protected $response;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
     protected $baseUri = 'https://www.szamlazz.hu';
-
-    protected static $propertyMapping = [
-        'username' => 'felhasznalo',
-        'password' => 'jelszo',
-        'keychain' => 'kulcstartojelszo',
-        'downloadPdf' => 'pdfLetoltes',
-        'downloadCopiesCount' => 'szamlaLetoltesPld',
-        'valaszVerzio' => 'valaszVerzio',
-        'aggregator' => 'aggregator',
-    ];
-
-    public function setApiKey(string $apiKey)
-    {
-        $this->apiKey = $apiKey;
-
-        return $this;
-    }
-
-    public function getApiKey()
-    {
-        return $this->apiKey;
-    }
 
     /**
      * @return string
@@ -103,19 +53,30 @@ class SzamlazzClient
         return $this;
     }
 
-    public function __construct(ClientInterface $client, LoggerInterface $logger)
+    protected static $propertyMapping = [
+        'username' => 'felhasznalo',
+        'password' => 'jelszo',
+        'keychain' => 'kulcstartojelszo',
+        'downloadPdf' => 'pdfLetoltes',
+        'downloadCopiesCount' => 'szamlaLetoltesPld',
+        'valaszVerzio' => 'valaszVerzio',
+        'aggregator' => 'aggregator',
+    ];
+
+    public function __construct(ClientInterface $client, LoggerInterface $logger, Settings $settings)
     {
         $this->client = $client;
         $this->logger = $logger;
+        $this->settings = Settings::__set_state($settings);
     }
 
     /**
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
-    public function getTaxPayer(string $taxPayerId): ?TaxPayerResponse
+    public function getTaxPayer(string $taxpayerId): ?TaxPayerResponse
     {
-        $response = $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
+        $response = $this->sendSzamlaAgentRequest('getTaxPayer', TaxPayer::__set_state(['taxpayerId' => $taxpayerId]));
 
         libxml_use_internal_errors(true);
 
@@ -137,6 +98,14 @@ class SzamlazzClient
         }
 
         return $taxpayer;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function generateInvoice(array $data)
+    {
+        $response = $this->sendSzamlaAgentRequest('generateInvoice', Invoice::__set_state($data));
     }
 
     protected function getUri($path)
@@ -171,6 +140,9 @@ class SzamlazzClient
         return $this->client->request($method, $uri, $options);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function sendSzamlaAgentRequest(string $type, object $entity): ResponseInterface
     {
         $request = new SzamlaAgentRequest($this, $type, $entity);

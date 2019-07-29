@@ -10,6 +10,11 @@ class Seller extends Base
     /**
      * {@inheritdoc}
      */
+    protected $complexTypeName = 'elado';
+
+    /**
+     * {@inheritdoc}
+     */
     protected static $propertyMapping = [
         'bank'              => 'bank',
         'bankAccountNumber' => 'bankszamlaszam',
@@ -48,10 +53,4 @@ class Seller extends Base
      * @var string
      */
     public $signerName;
-
-    public function __construct(string $bankName, string $bankAccountNumber)
-    {
-        $this->bankName = $bankName;
-        $this->bankAccountNumber = $bankAccountNumber;
-    }
 }

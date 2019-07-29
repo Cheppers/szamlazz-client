@@ -16,38 +16,29 @@ class Settings extends Base
      * {@inheritdoc}
      */
     protected static $propertyMapping = [
-        'username'           => 'felhasznalo',
-        'password'           => 'jelszo',
-        'eInvoice'           => 'eszamla',
-        'keychainPassword'   => 'kulcstartojelszo',
-        'invoiceDownload'    => 'szamlaLetoltes',
-        'invoiceDownloadPld' => 'szamlaLetoltesPld',
-        'responseVersion'    => 'valaszVerzio',
-        'aggregator'         => 'aggregator',
-        'invoiceNumber'      => 'szamlaszam',
-        'additive'           => 'additiv',
-        'pdfDownload'        => 'pdfLetoltes',
+        'apiKey'               => 'szamlaagentkulcs',
+        'eInvoice'             => 'eszamla',
+        'keychainPassword'     => 'kulcstartojelszo',
+        'invoiceDownload'      => 'szamlaLetoltes',
+        'invoiceDownloadCount' => 'szamlaLetoltesPld',
+        'responseVersion'      => 'valaszVerzio',
+        'aggregator'           => 'aggregator',
+        'invoiceNumber'        => 'szamlaszam',
+        'additive'             => 'additiv',
+        'pdfDownload'          => 'pdfLetoltes',
     ];
 
     /**
      * {@inheritdoc}
      */
     protected $requiredFields = [
-       'username',
-       'password',
-       'eInvoice',
-       'invoiceDownload',
+        'apiKey',
     ];
 
     /**
      * @var string
      */
-    public $username;
-
-    /**
-     * @var string
-     */
-    public $password;
+    public $apiKey;
 
     /**
      * @var bool
@@ -67,7 +58,7 @@ class Settings extends Base
     /**
      * @var int
      */
-    public $invoiceDownloadPld;
+    public $invoiceDownloadCount;
 
     /**
      * @var int

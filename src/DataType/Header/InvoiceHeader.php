@@ -79,7 +79,9 @@ class InvoiceHeader extends Base
      */
     public $currency;
 
-    // @todo create InvoiceLanguageType for this property
+    /**
+     * @var string
+     */
     public $invoiceLanguage;
 
     /**

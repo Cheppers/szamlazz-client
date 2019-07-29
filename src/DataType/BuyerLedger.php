@@ -46,16 +46,4 @@ class BuyerLedger extends Base
      * @var boolean
      */
     public $continuedFulfillment = false;
-
-    public function __construct(
-        string $buyerId,
-        string $bookingDate,
-        string $buyerLedgerNumber,
-        string $continuedFulfillment
-    ) {
-        $this->buyerId = $buyerId;
-        $this->bookingDate = $bookingDate;
-        $this->buyerLedgerNumber = $buyerLedgerNumber;
-        $this->continuedFulfillment = $continuedFulfillment;
-    }
 }

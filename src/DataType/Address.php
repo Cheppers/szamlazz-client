@@ -56,7 +56,7 @@ class Address extends Base
      */
     public $door;
 
-    public static function __set_state(\DOMElement $root)
+    public static function __set_state($root)
     {
         $instance = new static();
 

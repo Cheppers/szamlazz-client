@@ -86,11 +86,9 @@ class SzamlaAgentRequest
     {
         $this->setXmlFileData($this->type);
 
-        $fullXmlData['beallitasok'] = [
-            'szamlaagentkulcs' => $this->szamlazzClient->getApiKey(),
-        ];
-
-        $fullXmlData += $this->entity->buildXmlData($this);
+        $settings = $this->szamlazzClient->settings->exportData();
+        $data = $this->entity->exportData();
+        $fullXmlData = array_merge($settings, $data);
 
         $doc = $this->getXmlBase();
         $xml = $this->arrayToXML($fullXmlData, $doc);

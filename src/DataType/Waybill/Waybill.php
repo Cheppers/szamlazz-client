@@ -12,6 +12,11 @@ class Waybill extends Base
     /**
      * {@inheritdoc}
      */
+    protected $complexTypeName = 'fuvarlevel';
+
+    /**
+     * {@inheritdoc}
+     */
     protected static $propertyMapping = [
         'destination' => 'uticel',
         'parcel'      => 'futarSzolgalat',
