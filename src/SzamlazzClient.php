@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient;
 
+use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
 use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
@@ -23,12 +24,7 @@ class SzamlazzClient
     /**
      * @var string
      */
-    public $username = '';
-
-    /**
-     * @var string
-     */
-    public $password = '';
+    protected $apiKey;
 
     /**
      * @var string
@@ -77,12 +73,16 @@ class SzamlazzClient
         'aggregator' => 'aggregator',
     ];
 
-    public function setUp(string $username, string $password)
+    public function setApiKey(string $apiKey)
     {
-        $this->username = $username;
-        $this->password = $password;
+        $this->apiKey = $apiKey;
 
         return $this;
+    }
+
+    public function getApiKey()
+    {
+        return $this->apiKey;
     }
 
     /**
@@ -113,18 +113,30 @@ class SzamlazzClient
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
-    public function getTaxPayer(string $taxPayerId)
+    public function getTaxPayer(string $taxPayerId): ?TaxPayerResponse
     {
         $response = $this->sendSzamlaAgentRequest('getTaxPayer', new TaxPayer($taxPayerId));
 
         libxml_use_internal_errors(true);
 
-        $data = new \DOMDocument();
-        $data->loadXML($response->getBody()->getContents());
+        $doc = new \DOMDocument();
+        $doc->loadXML($response->getBody()->getContents());
 
-        if (!SzamlaAgentUtil::isResponseValid($data)) {
+        if (!SzamlaAgentUtil::isResponseValid($doc)) {
             $this->logXmlErrors();
+            throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
         }
+
+        /** @var \DOMElement $root */
+        $root = $doc->getElementsByTagName('QueryTaxpayerResponse')->item(0);
+
+        $taxpayer = TaxPayerResponse::__set_state($root);
+
+        if (!$taxpayer->taxpayerName && !$taxpayer->address) {
+            throw new SzamlazzClientException(SzamlazzClientException::TAXPAYER_NOT_EXIST);
+        }
+
+        return $taxpayer;
     }
 
     protected function getUri($path)

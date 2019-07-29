@@ -62,8 +62,9 @@ class AddressTest extends TestCase
     {
         $doc = new \DOMDocument();
         $doc->loadXML($xml);
+        $elements = $doc->getElementsByTagName('taxpayerAddress')->item(0);
 
-        $instance = Address::__set_state($doc);
+        $instance = Address::__set_state($elements);
 
         foreach ($expected as $name => $value) {
             static::assertEquals($value, $instance->{$name});

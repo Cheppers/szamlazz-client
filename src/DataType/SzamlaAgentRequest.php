@@ -87,8 +87,7 @@ class SzamlaAgentRequest
         $this->setXmlFileData($this->type);
 
         $fullXmlData['beallitasok'] = [
-            'felhasznalo' => $this->szamlazzClient->username,
-            'jelszo' => $this->szamlazzClient->password,
+            'szamlaagentkulcs' => $this->szamlazzClient->getApiKey(),
         ];
 
         $fullXmlData += $this->entity->buildXmlData($this);

@@ -56,15 +56,56 @@ class Address extends Base
      */
     public $door;
 
-    public static function __set_state(\DOMNode $doc)
+    public static function __set_state(\DOMElement $root)
     {
         $instance = new static();
 
-        foreach ($doc->childNodes as $element) {
-            if ($element->nodeType !== XML_ELEMENT_NODE) {
+        foreach ($root->childNodes as $element) {
+            if ($element->nodeType !== XML_ELEMENT_NODE || !property_exists($instance, $element->nodeName)) {
                 continue;
             }
-            $instance->{$element->nodeName} = $element->nodeValue;
+
+            switch ($element->nodeName) {
+                case 'countryCode':
+                    $instance->countryCode = $element->nodeValue;
+                    break;
+
+                case 'postalCode':
+                    $instance->postalCode = $element->nodeValue;
+                    break;
+
+                case 'city':
+                    $instance->city = $element->nodeValue;
+                    break;
+
+                case 'streetName':
+                    $instance->streetName = $element->nodeValue;
+                    break;
+
+                case 'publicPlaceCategory':
+                    $instance->publicPlaceCategory = $element->nodeValue;
+                    break;
+
+                case 'number':
+                    $instance->number = $element->nodeValue;
+                    break;
+
+                case 'building':
+                    $instance->building = $element->nodeValue;
+                    break;
+
+                case 'staircase':
+                    $instance->staircase = $element->nodeValue;
+                    break;
+
+                case 'floor':
+                    $instance->floor = $element->nodeValue;
+                    break;
+
+                case 'door':
+                    $instance->door = $element->nodeValue;
+                    break;
+            }
         }
 
         return $instance;

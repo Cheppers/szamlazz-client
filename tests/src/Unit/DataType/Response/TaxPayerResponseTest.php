@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Response;
 
+use Cheppers\SzamlazzClient\DataType\Address;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -12,10 +13,22 @@ class TaxPayerResponseTest extends TestCase
 
     public function casesSetState(): array
     {
+        $address = new Address();
+        $address->countryCode = 'HU';
+        $address->postalCode = '8154';
+        $address->city = 'POLGÁRDI';
+        $address->streetName = 'Test';
+        $address->publicPlaceCategory = 'Street';
+        $address->number = '42';
+        $address->building = '1';
+        $address->staircase = 'A';
+        $address->floor = 'B';
+        $address->door = '2';
+
         return [
             'empty' => [
                 [
-                    'taxPayerName' => null,
+                    'taxpayerName' => null,
                 ],
                 implode(PHP_EOL, [
                 '<?xml version="1.0" encoding="UTF-8"?>',
@@ -24,50 +37,41 @@ class TaxPayerResponseTest extends TestCase
             ],
             'basic' => [
                 [
-                    'taxPayerValidity' => 'false',
-                    'taxPayerName' => 'Test Taxpayer',
                     'requestId' => 'test_request_id',
                     'timestamp' => '2019-07-25T13:30:18.183Z',
-                    'address' => [
-                        'countryCode' => 'HU',
-                        'postalCode' => '8154',
-                        'city' => 'POLGÁRDI',
-                        'streetName' => 'Test',
-                        'publicPlaceCategory' => 'Street',
-                        'number' => '42',
-                        'building' => '1',
-                        'staircase' => 'A',
-                        'floor' => 'B',
-                        'door' => '2',
-                    ],
+                    'requestVersion' => '1.1',
+                    'taxpayerValidity' => 'false',
+                    'funcCode' => 'OK',
+                    'taxpayerName' => 'Test Taxpayer',
+                    'address' => $address,
                 ],
                 implode(PHP_EOL, [
                     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
                     '<QueryTaxpayerResponse xmlns="http://schemas.nav.gov.hu/OSA/1.0/api" xmlns:ns2="http://schemas.nav.gov.hu/OSA/1.0/data">',
-                    '<header>',
-                    '<requestId>test_request_id</requestId>',
-                    '<timestamp>2019-07-25T13:30:18.183Z</timestamp>',
-                    '<requestVersion>1.1</requestVersion>',
-                    '</header>',
-                    '<result>',
-                    '<funcCode>OK</funcCode>',
-                    '</result>',
-                    '<taxpayerValidity>false</taxpayerValidity>',
-                    '<taxpayerData>',
-                    '<taxpayerName>Test Taxpayer</taxpayerName>',
-                    '<taxpayerAddress>',
-                    '<countryCode>HU</countryCode>',
-                    '<postalCode>8154</postalCode>',
-                    '<city>POLGÁRDI</city>',
-                    '<streetName>Test</streetName>',
-                    '<publicPlaceCategory>Street</publicPlaceCategory>',
-                    '<number>42</number>',
-                    '<building>1</building>',
-                    '<staircase>A</staircase>',
-                    '<floor>B</floor>',
-                    '<door>2</door>',
-                    '</taxpayerAddress>',
-                    '</taxpayerData>',
+                    '    <header>',
+                    '        <requestId>test_request_id</requestId>',
+                    '        <timestamp>2019-07-25T13:30:18.183Z</timestamp>',
+                    '        <requestVersion>1.1</requestVersion>',
+                    '    </header>',
+                    '    <result>',
+                    '        <funcCode>OK</funcCode>',
+                    '    </result>',
+                    '    <taxpayerValidity>false</taxpayerValidity>',
+                    '    <taxpayerData>',
+                    '        <taxpayerName>Test Taxpayer</taxpayerName>',
+                    '        <taxpayerAddress>',
+                    '            <countryCode>HU</countryCode>',
+                    '            <postalCode>8154</postalCode>',
+                    '            <city>POLGÁRDI</city>',
+                    '            <streetName>Test</streetName>',
+                    '            <publicPlaceCategory>Street</publicPlaceCategory>',
+                    '            <number>42</number>',
+                    '            <building>1</building>',
+                    '            <staircase>A</staircase>',
+                    '            <floor>B</floor>',
+                    '            <door>2</door>',
+                    '        </taxpayerAddress>',
+                    '    </taxpayerData>',
                     '</QueryTaxpayerResponse>'
                 ])
             ],
@@ -82,7 +86,9 @@ class TaxPayerResponseTest extends TestCase
         $doc = new \DOMDocument();
         $doc->loadXML($xml);
 
-        $instance = TaxPayerResponse::__set_state($doc);
+        /** @var \DOMElement $root */
+        $root = $doc->getElementsByTagName('QueryTaxpayerResponse')->item(0);
+        $instance = TaxPayerResponse::__set_state($root);
 
         foreach ($expected as $name => $value) {
             static::assertEquals($value, $instance->{$name});

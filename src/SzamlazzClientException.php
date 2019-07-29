@@ -10,6 +10,7 @@ class SzamlazzClientException extends \Exception
 {
     const REQUEST_TYPE_NOT_EXISTS                = 'A kérés típusa nem létezik';
     const RESPONSE_TYPE_NOT_EXISTS               = 'A válasz típusa nem létezik';
+    const RESPONSE_TYPE_NOT_VALID                = 'A válasz típusa nem érvényes';
     const CALL_TYPE_NOT_EXISTS                   = 'Nem létező hívás típus';
     const XML_SCHEMA_TYPE_NOT_EXISTS             = 'Az XML séma típusa nem létezik';
     const XML_KEY_NOT_EXISTS                     = 'XML kulcs nem létezik';
@@ -28,4 +29,5 @@ class SzamlazzClientException extends \Exception
     const AGENT_RESPONSE_IS_EMPTY                = 'A Számla Agent válasza nem lehet üres!';
     const AGENT_ERROR                            = 'Agent hiba';
     const FILE_CREATION_FAILED                   = 'A fájl létrehozása sikertelen.';
+    const TAXPAYER_NOT_EXIST                     = 'Az adófizető nem létezik';
 }
