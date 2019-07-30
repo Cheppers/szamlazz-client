@@ -56,6 +56,12 @@ class Address extends Base
      */
     public $door;
 
+    public function isEmpty(): bool
+    {
+        return $this->countryCode === null;
+    }
+
+
     public static function __set_state($root)
     {
         $instance = new static();

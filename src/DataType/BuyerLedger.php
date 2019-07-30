@@ -46,4 +46,9 @@ class BuyerLedger extends Base
      * @var boolean
      */
     public $continuedFulfillment = false;
+
+    public function isEmpty(): bool
+    {
+        return $this->buyerId === null;
+    }
 }

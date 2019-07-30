@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class ReceiptHeader extends Base
+class ReceiptHeader
 {
 
     /**

@@ -7,7 +7,7 @@ namespace Cheppers\SzamlazzClient\DataType\Response;
 use Cheppers\SzamlazzClient\DataType\Address;
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class TaxPayerResponse extends Base
+class TaxPayerResponse
 {
 
     /**

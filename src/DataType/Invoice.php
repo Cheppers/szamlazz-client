@@ -7,10 +7,10 @@ namespace Cheppers\SzamlazzClient\DataType;
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
 use Cheppers\SzamlazzClient\SzamlazzClientException;
+use DoctrineTest\InstantiatorTestAsset\AbstractClassAsset;
 
-class Invoice extends Base
+class Invoice
 {
-
     /**
      * {@inheritdoc}
      */
@@ -104,11 +104,48 @@ class Invoice extends Base
                     $instance->waybill = Waybill::__set_state($value);
                     break;
                 case 'items':
-                    $instance->items = Item::__set_state($value);
+                    foreach ($value as $item) {
+                        $instance->items[] = Item::__set_state($item);
+                    }
                     break;
             }
         }
 
         return $instance;
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->settings === null;
+    }
+
+    public function buildXmlData(\DOMDocument $doc): \DOMDocument
+    {
+        if ($this->isEmpty()) {
+            return $doc;
+        }
+
+        foreach (static::$propertyMapping as $internal => $external) {
+            $value =  $this->{$internal};
+            if (!in_array($internal, $this->requiredFields) && !$value) {
+                continue;
+            }
+
+            if ($internal === 'items') {
+                foreach ($this->items as $item) {
+                    $doc = $item->buildXmlData($doc);
+                }
+                $itemElements = $doc->getElementsByTagName('tetel');
+                $items = $doc->createElement('tetelek');
+                foreach ($itemElements as $itemElement) {
+                    $items->appendChild($itemElement);
+                }
+                continue;
+            }
+
+            $doc = $this->{$internal}->buildXmlData($doc);
+        }
+
+        return $doc;
     }
 }

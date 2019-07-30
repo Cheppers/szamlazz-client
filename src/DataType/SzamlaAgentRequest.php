@@ -75,6 +75,7 @@ class SzamlaAgentRequest
     {
         $this->szamlazzClient = $szamlazzClient;
         $this->type = $type;
+        $this->setXmlFileData($type);
         $this->entity = $entity;
     }
 
@@ -86,15 +87,9 @@ class SzamlaAgentRequest
     {
         $this->setXmlFileData($this->type);
 
-        $settings = $this->szamlazzClient->settings->exportData();
-        $data = $this->entity->exportData();
-        $fullXmlData = array_merge($settings, $data);
-
         $doc = $this->getXmlBase();
-        $xml = $this->arrayToXML($fullXmlData, $doc);
-        $xml->formatOutput = true;
 
-        return $xml->saveXML();
+        return $doc;
     }
 
     protected function arrayToXML(array $xmlData, \DOMDocument &$doc)
@@ -121,7 +116,7 @@ class SzamlaAgentRequest
     /**
      * @return \DOMDocument
      */
-    protected function getXmlBase()
+    public function getXmlBase()
     {
         $xmlName = $this->xmlName;
         $doc = new \DOMDocument('1.0', 'UTF-8');
@@ -154,7 +149,7 @@ class SzamlaAgentRequest
     /**
      * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
      */
-    protected function setXmlFileData(string $type)
+    public function setXmlFileData(string $type)
     {
         switch ($type) {
             case 'generateProforma':

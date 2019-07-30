@@ -12,14 +12,16 @@ abstract class BaseTestBase extends TestCase
      */
     protected $className = '';
 
-    abstract public function casesExportData();
+    abstract public function casesBuildXmlData();
 
     /**
-     * @dataProvider casesExportData
+     * @dataProvider casesBuildXmlData
      */
-    public function testExportData(array $expected, array $values)
+    public function testBuildXmlData(string $expected, $classInstance, \DOMDocument $doc)
     {
-        $data = $this->className::__set_state($values);
-        static::assertSame($expected, $data->exportData());
+        $data = $classInstance->buildXmlData($doc);
+        $data->formatOutput = true;
+        $dataString = $data->saveXML();
+        static::assertEquals($expected, $dataString);
     }
 }

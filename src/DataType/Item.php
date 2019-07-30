@@ -10,7 +10,7 @@ class Item extends Base
     /**
      * {@inheritdoc}
      */
-    protected $complexTypeName = 'tetelTipus';
+    protected $complexTypeName = 'tetel';
 
     /**
      * {@inheritdoc}
@@ -103,4 +103,9 @@ class Item extends Base
      * @var ItemLedger
      */
     public $itemLedger;
+
+    public function isEmpty(): bool
+    {
+        return $this->id === null;
+    }
 }

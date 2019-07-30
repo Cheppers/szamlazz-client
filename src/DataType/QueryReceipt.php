@@ -41,4 +41,9 @@ class QueryReceipt extends Base
      * @var string[]
      */
     public $header;
+
+    public function isEmpty(): bool
+    {
+        return $this->receiptId === null;
+    }
 }

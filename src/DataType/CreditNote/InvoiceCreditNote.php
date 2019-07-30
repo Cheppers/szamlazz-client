@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\CreditNote;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class InvoiceCreditNote extends Base
+class InvoiceCreditNote
 {
     /**
      * {@inheritdoc}

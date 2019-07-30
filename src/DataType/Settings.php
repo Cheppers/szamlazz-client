@@ -23,9 +23,6 @@ class Settings extends Base
         'invoiceDownloadCount' => 'szamlaLetoltesPld',
         'responseVersion'      => 'valaszVerzio',
         'aggregator'           => 'aggregator',
-        'invoiceNumber'        => 'szamlaszam',
-        'additive'             => 'additiv',
-        'pdfDownload'          => 'pdfLetoltes',
     ];
 
     /**
@@ -70,18 +67,8 @@ class Settings extends Base
      */
     public $aggregator;
 
-    /**
-     * @var string
-     */
-    public $invoiceNumber;
-
-    /**
-     * @var bool
-     */
-    public $additive;
-
-    /**
-     * @var bool
-     */
-    public $pdfDownload;
+    public function isEmpty(): bool
+    {
+        return $this->apiKey === null;
+    }
 }

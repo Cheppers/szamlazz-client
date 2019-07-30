@@ -43,4 +43,9 @@ class GenerateReceipt extends Base
      * @var ReceiptCreditNote[]
      */
     public $creditNotes;
+
+    public function isEmpty(): bool
+    {
+        return $this->settings === null;
+    }
 }

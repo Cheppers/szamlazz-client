@@ -47,7 +47,9 @@ class TaxPayerResponseTest extends TestCase
                 ],
                 implode(PHP_EOL, [
                     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-                    '<QueryTaxpayerResponse xmlns="http://schemas.nav.gov.hu/OSA/1.0/api" xmlns:ns2="http://schemas.nav.gov.hu/OSA/1.0/data">',
+                    '<QueryTaxpayerResponse',
+                    '    xmlns="http://schemas.nav.gov.hu/OSA/1.0/api"',
+                    '    xmlns:ns2="http://schemas.nav.gov.hu/OSA/1.0/data">',
                     '    <header>',
                     '        <requestId>test_request_id</requestId>',
                     '        <timestamp>2019-07-25T13:30:18.183Z</timestamp>',

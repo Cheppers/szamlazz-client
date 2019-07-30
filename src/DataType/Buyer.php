@@ -147,4 +147,9 @@ class Buyer extends Base
      * @var string
      */
     public $comment;
+
+    public function isEmpty(): bool
+    {
+        return $this->name === null;
+    }
 }

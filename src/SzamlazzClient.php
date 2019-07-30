@@ -26,7 +26,7 @@ class SzamlazzClient
     /**
      * @var \Cheppers\SzamlazzClient\DataType\Settings
      */
-    public $settings;
+    protected $settings;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -63,11 +63,10 @@ class SzamlazzClient
         'aggregator' => 'aggregator',
     ];
 
-    public function __construct(ClientInterface $client, LoggerInterface $logger, Settings $settings)
+    public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->logger = $logger;
-        $this->settings = Settings::__set_state($settings);
     }
 
     /**
@@ -105,12 +104,30 @@ class SzamlazzClient
      */
     public function generateInvoice(array $data)
     {
-        $response = $this->sendSzamlaAgentRequest('generateInvoice', Invoice::__set_state($data));
+        $request = new SzamlaAgentRequest($this, 'generateInvoice', Invoice::__set_state($data));
+        $docBase = $request->getXmlBase();
+        /** @var \DOMDocument $doc */
+        $doc = $request->entity->buildXmlData($docBase);
+        $doc->formatOutput = true;
+
+        return $response = $this->sendSzamlaAgentRequest($doc->saveXml(), $request->fileName);
     }
 
     protected function getUri($path)
     {
         return $this->getBaseUri() . "/$path";
+    }
+
+    public function getSettings(): Settings
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(Settings $settings)
+    {
+        $this->settings = $settings;
+
+        return $this;
     }
 
     /**
@@ -143,19 +160,16 @@ class SzamlazzClient
     /**
      * @throws \Exception
      */
-    public function sendSzamlaAgentRequest(string $type, object $entity): ResponseInterface
+    public function sendSzamlaAgentRequest(string $xml, string $fileName): ResponseInterface
     {
-        $request = new SzamlaAgentRequest($this, $type, $entity);
-
         try {
-            $xml = $request->buildXmlData();
-
+            print_r($xml);
             $response = $this->sendPost(
                 self::API_URL,
                 [
                     'multipart' => [
                         [
-                            'name'     => $request->fileName,
+                            'name'     => $fileName,
                             'contents' => fopen('data:text/plain,' . urlencode($xml), 'rb'),
                         ],
                     ],

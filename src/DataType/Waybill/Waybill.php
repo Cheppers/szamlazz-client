@@ -67,4 +67,9 @@ class Waybill extends Base
      * @var MPL
      */
     public $mpl;
+
+    public function isEmpty(): bool
+    {
+        return false;
+    }
 }

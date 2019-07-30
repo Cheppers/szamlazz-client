@@ -1016,12 +1016,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2834789aeb9ac182ad69bfdf9ae91856a59945ff"
+                "reference": "e11397fed729bfef7a9c76f7b193c27ad5710f6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2834789aeb9ac182ad69bfdf9ae91856a59945ff",
-                "reference": "2834789aeb9ac182ad69bfdf9ae91856a59945ff",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e11397fed729bfef7a9c76f7b193c27ad5710f6b",
+                "reference": "e11397fed729bfef7a9c76f7b193c27ad5710f6b",
                 "shasum": ""
             },
             "require": {
@@ -1081,8 +1081,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",
@@ -1092,7 +1092,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-07-15T06:24:08+00:00"
+            "time": "2019-07-27T05:00:17+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -1666,12 +1666,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "c59713fbd4dda58e569d43db9e53f3ba73ffe9e0"
+                "reference": "9ae59b2b73550d86710a08befeeef5e74d9fbdc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/c59713fbd4dda58e569d43db9e53f3ba73ffe9e0",
-                "reference": "c59713fbd4dda58e569d43db9e53f3ba73ffe9e0",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/9ae59b2b73550d86710a08befeeef5e74d9fbdc9",
+                "reference": "9ae59b2b73550d86710a08befeeef5e74d9fbdc9",
                 "shasum": ""
             },
             "require": {
@@ -1709,7 +1709,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2019-07-25T06:29:25+00:00"
+            "time": "2019-07-29T03:04:46+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

@@ -163,4 +163,9 @@ class InvoiceHeader extends Base
      * @var bool
      */
     public $profitVat;
+
+    public function isEmpty(): bool
+    {
+        return $this->issueDate === null;
+    }
 }

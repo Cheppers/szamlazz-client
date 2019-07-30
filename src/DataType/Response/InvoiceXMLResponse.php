@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Response;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class InvoiceXMLResponse extends Base
+class InvoiceXMLResponse
 {
 
     /**

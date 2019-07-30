@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\CreditNote;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class ReceiptCreditNote extends Base
+class ReceiptCreditNote
 {
 
     /**

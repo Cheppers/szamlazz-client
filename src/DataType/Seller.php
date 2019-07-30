@@ -53,4 +53,9 @@ class Seller extends Base
      * @var string
      */
     public $signerName;
+
+    public function isEmpty(): bool
+    {
+        return $this->bankAccountNumber === null;
+    }
 }

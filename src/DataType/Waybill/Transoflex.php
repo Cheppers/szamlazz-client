@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class Transoflex extends Base
+class Transoflex
 {
 
     /**

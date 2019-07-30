@@ -48,4 +48,9 @@ class ItemLedger extends Base
      * @var \DateTime
      */
     public $payOffDateTo;
+
+    public function isEmpty(): bool
+    {
+        return $this->economicEvent === null;
+    }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class TaxPayer extends Base
+class TaxPayer
 {
     /**
      * @var string
