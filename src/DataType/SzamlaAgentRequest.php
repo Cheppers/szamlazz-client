@@ -4,40 +4,15 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-use Cheppers\SzamlazzClient\SzamlazzClient;
 use Cheppers\SzamlazzClient\SzamlazzClientException;
-use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 
 class SzamlaAgentRequest
 {
-    const REQUEST_TIMEOUT = 30;
-
     const XML_SCHEMA_CREATE_INVOICE = 'xmlszamla';
 
     const XML_SCHEMA_CREATE_REVERSE_INVOICE = 'xmlszamlast';
 
-    const XML_SCHEMA_PAY_INVOICE = 'xmlszamlakifiz';
-
-    const XML_SCHEMA_REQUEST_INVOICE_PDF = 'xmlszamlapdf';
-
-    const XML_SCHEMA_REQUEST_INVOICE_XML = 'xmlszamlaxml';
-
-    const XML_SCHEMA_CREATE_RECEIPT = 'xmlnyugtacreate';
-
-    const XML_SCHEMA_CREATE_REVERSE_RECEIPT = 'xmlnyugtast';
-
-    const XML_SCHEMA_SEND_RECEIPT = 'xmlnyugtasend';
-
-    const XML_SCHEMA_GET_RECEIPT = 'xmlnyugtaget';
-
     const XML_SCHEMA_TAXPAYER = 'xmltaxpayer';
-
-    const XML_SCHEMA_DELETE_PROFORMA = 'xmlszamladbkdel';
-
-    /**
-     * @var \Cheppers\SzamlazzClient\SzamlazzClient
-     */
-    public $szamlazzClient;
 
     /**
      * @var string
@@ -52,11 +27,6 @@ class SzamlaAgentRequest
     /**
      * @var string
      */
-    public $xmlData;
-
-    /**
-     * @var string
-     */
     public $xmlName;
 
     /**
@@ -64,62 +34,36 @@ class SzamlaAgentRequest
      */
     public $xsdDir;
 
-    public $xmlFileName;
-
     /**
      * @var string
      */
     public $fileName;
 
-    public function __construct(SzamlazzClient $szamlazzClient, string $type, object $entity)
+    public function __construct(string $type, array $data)
     {
-        $this->szamlazzClient = $szamlazzClient;
         $this->type = $type;
-        $this->setXmlFileData($type);
-        $this->entity = $entity;
+        $this->setFieldData($type, $data);
     }
 
     /**
      * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
      * @throws \ReflectionException
      */
-    public function buildXmlData()
+    public function buildXml(): string
     {
-        $this->setXmlFileData($this->type);
+        $docBase = $this->getXmlBase();
+        /** @var \DOMDocument $doc */
+        $doc = $this->entity->buildXmlData($docBase);
+        $doc->formatOutput = true;
 
-        $doc = $this->getXmlBase();
-
-        return $doc;
+        return $doc->saveXML();
     }
 
-    protected function arrayToXML(array $xmlData, \DOMDocument &$doc)
-    {
-        $x = $doc->getElementsByTagName($this->xmlName)->item(0);
-        foreach ($xmlData as $key => $value) {
-            if (!is_array($value)) {
-                $child = $doc->createElement($key, $value);
-                $x->appendChild($child);
-            }
-            if (is_array($value)) {
-                $child = $doc->createElement($key);
-                foreach ($value as $ik => $iv) {
-                    $grandChild = $doc->createElement($ik, $iv);
-                    $child->appendChild($grandChild);
-                    $x->appendChild($child);
-                }
-            }
-        }
-
-        return $doc;
-    }
-
-    /**
-     * @return \DOMDocument
-     */
-    public function getXmlBase()
+    public function getXmlBase(): \DOMDocument
     {
         $xmlName = $this->xmlName;
         $doc = new \DOMDocument('1.0', 'UTF-8');
+        /** @var \DOMElement $root */
         $root = $doc->createElementNS($this->getXmlNs($xmlName), $xmlName);
         $root = $doc->appendChild($root);
         $root->setAttributeNS(
@@ -149,75 +93,28 @@ class SzamlaAgentRequest
     /**
      * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
      */
-    public function setXmlFileData(string $type)
+    public function setFieldData(string $type, array $data)
     {
         switch ($type) {
-            case 'generateProforma':
             case 'generateInvoice':
-            case 'generatePrePaymentInvoice':
-            case 'generateFinalInvoice':
-            case 'generateCorrectiveInvoice':
-            case 'generateDeliveryNote':
-                $fileName = 'action-xmlagentxmlfile';
-                $xmlName  = self::XML_SCHEMA_CREATE_INVOICE;
-                $xsdDir  = 'agent';
+                $this->fileName = 'action-xmlagentxmlfile';
+                $this->xmlName  = self::XML_SCHEMA_CREATE_INVOICE;
+                $this->xsdDir   = 'agent';
+                $this->entity   = Invoice::__set_state($data);
                 break;
             case 'generateReverseInvoice':
-                $fileName = 'action-szamla_agent_st';
-                $xmlName  = self::XML_SCHEMA_CREATE_REVERSE_INVOICE;
-                $xsdDir  = 'agentst';
-                break;
-            case 'payInvoice':
-                $fileName = 'action-szamla_agent_kifiz';
-                $xmlName  = self::XML_SCHEMA_PAY_INVOICE;
-                $xsdDir  = 'agentkifiz';
-                break;
-            case 'requestInvoicePDF':
-                $fileName =  'action-szamla_agent_pdf';
-                $xmlName  = self::XML_SCHEMA_REQUEST_INVOICE_PDF;
-                $xsdDir  = 'agentpdf';
-                break;
-            case 'requestInvoiceXML':
-                $fileName =  'action-szamla_agent_xml';
-                $xmlName  = self::XML_SCHEMA_REQUEST_INVOICE_XML;
-                $xsdDir  = 'agentpdf';
-                break;
-            case 'generateReceipt':
-                $fileName = 'action-szamla_agent_nyugta_create';
-                $xmlName  = self::XML_SCHEMA_CREATE_RECEIPT;
-                $xsdDir  = 'nyugtacreate';
-                break;
-            case 'generateReverseReceipt':
-                $fileName = 'action-szamla_agent_nyugta_storno';
-                $xmlName  = self::XML_SCHEMA_CREATE_REVERSE_RECEIPT;
-                $xsdDir  = 'nyugtast';
-                break;
-            case 'sendReceipt':
-                $fileName = 'action-szamla_agent_nyugta_send';
-                $xmlName  = self::XML_SCHEMA_SEND_RECEIPT;
-                $xsdDir  = 'nyugtasend';
-                break;
-            case 'requestReceiptPDF':
-                $fileName = 'action-szamla_agent_nyugta_get';
-                $xmlName  = self::XML_SCHEMA_GET_RECEIPT;
-                $xsdDir   = 'nyugtaget';
+                $this->fileName = 'action-szamla_agent_st';
+                $this->xmlName  = self::XML_SCHEMA_CREATE_REVERSE_INVOICE;
+                $this->xsdDir   = 'agentst';
                 break;
             case 'getTaxPayer':
-                $fileName = 'action-szamla_agent_taxpayer';
-                $xmlName  = self::XML_SCHEMA_TAXPAYER;
-                $xsdDir   = 'agent';
-                break;
-            case 'deleteProforma':
-                $fileName = 'action-szamla_agent_dijbekero_torlese';
-                $xmlName  = self::XML_SCHEMA_DELETE_PROFORMA;
-                $xsdDir   = 'dijbekerodel';
+                $this->fileName = 'action-szamla_agent_taxpayer';
+                $this->xmlName  = self::XML_SCHEMA_TAXPAYER;
+                $this->xsdDir   = 'agent';
+                $this->entity   = TaxPayer::__set_state($data);
                 break;
             default:
                 throw new SzamlazzClientException(SzamlazzClientException::REQUEST_TYPE_NOT_EXISTS . ": {$type}");
         }
-
-        $this->fileName = $fileName;
-        $this->xmlName = $xmlName;
-        $this->xsdDir = $xsdDir;
     }
 }

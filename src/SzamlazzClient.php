@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient;
 
-use Cheppers\SzamlazzClient\DataType\Invoice;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
-use Cheppers\SzamlazzClient\DataType\Settings;
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
-use Cheppers\SzamlazzClient\DataType\TaxPayer;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,15 +15,12 @@ class SzamlazzClient
 {
     const API_URL = 'szamla/';
 
+    const REQUEST_TIMEOUT = 30;
+
     /**
      * @var \GuzzleHttp\ClientInterface
      */
     protected $client;
-
-    /**
-     * @var \Cheppers\SzamlazzClient\DataType\Settings
-     */
-    protected $settings;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -53,16 +47,6 @@ class SzamlazzClient
         return $this;
     }
 
-    protected static $propertyMapping = [
-        'username' => 'felhasznalo',
-        'password' => 'jelszo',
-        'keychain' => 'kulcstartojelszo',
-        'downloadPdf' => 'pdfLetoltes',
-        'downloadCopiesCount' => 'szamlaLetoltesPld',
-        'valaszVerzio' => 'valaszVerzio',
-        'aggregator' => 'aggregator',
-    ];
-
     public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
         $this->client = $client;
@@ -73,22 +57,21 @@ class SzamlazzClient
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
-    public function getTaxPayer(string $taxpayerId): ?TaxPayerResponse
+    public function getTaxPayer(array $data): ?TaxPayerResponse
     {
-        $response = $this->sendSzamlaAgentRequest('getTaxPayer', TaxPayer::__set_state(['taxpayerId' => $taxpayerId]));
+        $request = new SzamlaAgentRequest('getTaxPayer', $data);
+        $response = $this->sendSzamlaAgentRequest($request);
+        $docResponse = new \DOMDocument();
+        $docResponse->loadXML($response->getBody()->getContents());
 
-        libxml_use_internal_errors(true);
-
-        $doc = new \DOMDocument();
-        $doc->loadXML($response->getBody()->getContents());
-
-        if (!SzamlaAgentUtil::isResponseValid($doc)) {
+        if (!SzamlaAgentUtil::isResponseValid($docResponse)) {
+            libxml_use_internal_errors(true);
             $this->logXmlErrors();
             throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
         }
 
         /** @var \DOMElement $root */
-        $root = $doc->getElementsByTagName('QueryTaxpayerResponse')->item(0);
+        $root = $docResponse->getElementsByTagName('QueryTaxpayerResponse')->item(0);
 
         $taxpayer = TaxPayerResponse::__set_state($root);
 
@@ -104,30 +87,14 @@ class SzamlazzClient
      */
     public function generateInvoice(array $data)
     {
-        $request = new SzamlaAgentRequest($this, 'generateInvoice', Invoice::__set_state($data));
-        $docBase = $request->getXmlBase();
-        /** @var \DOMDocument $doc */
-        $doc = $request->entity->buildXmlData($docBase);
-        $doc->formatOutput = true;
+        $request = new SzamlaAgentRequest('generateInvoice', $data);
 
-        return $response = $this->sendSzamlaAgentRequest($doc->saveXml(), $request->fileName);
+        return  $this->sendSzamlaAgentRequest($request);
     }
 
     protected function getUri($path)
     {
         return $this->getBaseUri() . "/$path";
-    }
-
-    public function getSettings(): Settings
-    {
-        return $this->settings;
-    }
-
-    public function setSettings(Settings $settings)
-    {
-        $this->settings = $settings;
-
-        return $this;
     }
 
     /**
@@ -160,7 +127,7 @@ class SzamlazzClient
     /**
      * @throws \Exception
      */
-    public function sendSzamlaAgentRequest(string $xml, string $fileName): ResponseInterface
+    public function sendSzamlaAgentRequest(SzamlaAgentRequest $request): ResponseInterface
     {
         try {
             $response = $this->sendPost(
@@ -168,10 +135,11 @@ class SzamlazzClient
                 [
                     'multipart' => [
                         [
-                            'name'     => $fileName,
-                            'contents' => fopen('data:text/plain,' . urlencode($xml), 'rb'),
+                            'name'     => $request->fileName,
+                            'contents' => fopen('data:text/plain,' . urlencode($request->buildXml()), 'rb'),
                         ],
                     ],
+                    'timeout' => static::REQUEST_TIMEOUT,
                 ]
             );
 

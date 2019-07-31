@@ -10,8 +10,7 @@ class SzamlaAgentUtil
 {
     public static function isResponseValid(\DOMDocument $doc): bool
     {
-//        return $doc->schemaValidate('schemas/invoiceApi.xsd');
-        return true;
+        return $doc->schemaValidate('schemas/invoiceApi.xsd');
     }
 
     public static function checkValidXml(\SimpleXMLElement $xmlContent): array
