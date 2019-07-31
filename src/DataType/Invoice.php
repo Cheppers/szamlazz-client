@@ -22,11 +22,11 @@ class Invoice
     protected static $propertyMapping = [
         'settings'    => 'beallitasok',
         'header'      => 'fejlec',
-        'buyer'       => 'vevo',
-        'buyerLedger' => 'vevoFokonyv',
         'seller'      => 'elado',
+        'buyer'       => 'vevo',
         'waybill'     => 'fuvarlevel',
         'items'       => 'tetelek',
+        'buyerLedger' => 'vevoFokonyv',
     ];
 
     /**
@@ -140,6 +140,7 @@ class Invoice
                 foreach ($itemElements as $itemElement) {
                     $items->appendChild($itemElement);
                 }
+                $doc->documentElement->appendChild($items);
                 continue;
             }
 

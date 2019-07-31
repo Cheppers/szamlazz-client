@@ -19,7 +19,7 @@ class Item extends Base
         'title'           => 'megnevezes',
         'id'              => 'azonosito',
         'quantity'        => 'mennyiseg',
-        'quantityUnit'    => 'mennyisegiEgyegar',
+        'quantityUnit'    => 'mennyisegiEgyseg',
         'netUnitPrice'    => 'nettoEgysegar',
         'vat'             => 'afakulcs',
         'priceGapVatBase' => 'arresAfaAlap',
@@ -106,6 +106,6 @@ class Item extends Base
 
     public function isEmpty(): bool
     {
-        return $this->id === null;
+        return $this->title === null;
     }
 }

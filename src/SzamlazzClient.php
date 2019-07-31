@@ -163,7 +163,6 @@ class SzamlazzClient
     public function sendSzamlaAgentRequest(string $xml, string $fileName): ResponseInterface
     {
         try {
-            print_r($xml);
             $response = $this->sendPost(
                 self::API_URL,
                 [
