@@ -30,4 +30,5 @@ class SzamlazzClientException extends \Exception
     const AGENT_ERROR                            = 'Agent hiba';
     const FILE_CREATION_FAILED                   = 'A fájl létrehozása sikertelen.';
     const TAXPAYER_NOT_EXIST                     = 'Az adófizető nem létezik';
+    const INVOICE_GENERATE_FAILED                = 'Számla generálás nem sikerült';
 }

@@ -132,12 +132,10 @@ class Invoice
             }
 
             if ($internal === 'items') {
+                $items = $doc->createElement('tetelek');
                 foreach ($this->items as $item) {
                     $doc = $item->buildXmlData($doc);
-                }
-                $itemElements = $doc->getElementsByTagName('tetel');
-                $items = $doc->createElement('tetelek');
-                foreach ($itemElements as $itemElement) {
+                    $itemElement = $doc->getElementsByTagName('tetel')->item(0);
                     $items->appendChild($itemElement);
                 }
                 $doc->documentElement->appendChild($items);

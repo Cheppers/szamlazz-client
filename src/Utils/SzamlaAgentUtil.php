@@ -8,9 +8,14 @@ use Cheppers\SzamlazzClient\SzamlazzClient;
 
 class SzamlaAgentUtil
 {
-    public static function isResponseValid(\DOMDocument $doc): bool
+    public static function isTaxpayerResponseValid(\DOMDocument $doc): bool
     {
         return $doc->schemaValidate('schemas/invoiceApi.xsd');
+    }
+
+    public static function isInvoiceResponseValid(\DOMDocument $doc): bool
+    {
+        return $doc->schemaValidate('schemas/xmlszamlavalasz.xsd');
     }
 
     public static function checkValidXml(\SimpleXMLElement $xmlContent): array

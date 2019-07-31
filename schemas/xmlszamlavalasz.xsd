@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.szamlazz.hu/xmlszamlavalasz" xmlns:tns="http://www.szamlazz.hu/xmlszamlavalasz" elementFormDefault="qualified">
+    <complexType name="szamlavalasz">
+        <sequence>
+            <element name="sikeres" type="boolean" maxOccurs="1" minOccurs="1"></element>
+            <element name="hibakod" type="string" maxOccurs="1" minOccurs="0"></element>
+            <element name="hibauzenet" type="string" maxOccurs="1" minOccurs="0"></element>
+            <element name="szamlaszam" type="string" maxOccurs="1" minOccurs="0"></element>
+            <element name="szamlanetto" type="double" maxOccurs="1" minOccurs="0"></element>
+            <element name="szamlabrutto" type="double" maxOccurs="1" minOccurs="0"></element>
+            <element name="kintlevoseg" type="double" maxOccurs="1" minOccurs="0"></element>
+            <element name="vevoifiokurl" type="string" maxOccurs="1" minOccurs="0"></element>
+            <element name="pdf" type="base64Binary" maxOccurs="1" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+    
+    <element name="xmlszamlavalasz" type="tns:szamlavalasz"></element>
+    
+</schema>

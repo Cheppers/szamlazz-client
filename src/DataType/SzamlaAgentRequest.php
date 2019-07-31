@@ -55,7 +55,7 @@ class SzamlaAgentRequest
         /** @var \DOMDocument $doc */
         $doc = $this->entity->buildXmlData($docBase);
         $doc->formatOutput = true;
-
+        print_r($doc->saveXML());
         return $doc->saveXML();
     }
 

@@ -9,9 +9,6 @@ use Cheppers\SzamlazzClient\DataType\Base;
 class InvoiceResponse
 {
 
-    /**
-     * {@inheritdoc}
-     */
     protected static $propertyMapping = [
         'success'       => 'sikeres',
         'errorCode'     => 'hibakod',
@@ -56,4 +53,49 @@ class InvoiceResponse
      * @var string
      */
     public $pdfData;
+
+    public static function __set_state(\DOMElement $root): InvoiceResponse
+    {
+        $instance = new static();
+
+        /** @var \DOMElement $element */
+        /** @var \DOMElement $subElement */
+        foreach ($root->childNodes as $element) {
+            if ($element->nodeType !== XML_ELEMENT_NODE) {
+                continue;
+            }
+
+            switch ($element->nodeName) {
+                case 'sikeres':
+                    $instance->success = $element->nodeValue;
+                    break;
+
+                case 'hibakod':
+                    $instance->errorCode = $element->nodeValue;
+                    break;
+
+                case 'hibauzenet':
+                    $instance->errorMessage = $element->nodeValue;
+                    break;
+
+                case 'szamlaszam':
+                    $instance->invoiceNumber = $element->nodeValue;
+                    break;
+
+                case 'szamlanetto':
+                    $instance->netPrice = $element->nodeValue;
+                    break;
+
+                case 'szamlabrutto':
+                    $instance->grossAmount = $element->nodeValue;
+                    break;
+
+                case 'pdf':
+                    $instance->pdfData = $element->nodeValue;
+                    break;
+            }
+        }
+
+        return $instance;
+    }
 }

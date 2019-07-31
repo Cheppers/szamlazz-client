@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient;
 
+use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
 use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
@@ -64,7 +65,7 @@ class SzamlazzClient
         $docResponse = new \DOMDocument();
         $docResponse->loadXML($response->getBody()->getContents());
 
-        if (!SzamlaAgentUtil::isResponseValid($docResponse)) {
+        if (!SzamlaAgentUtil::isTaxpayerResponseValid($docResponse)) {
             libxml_use_internal_errors(true);
             $this->logXmlErrors();
             throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
@@ -88,8 +89,28 @@ class SzamlazzClient
     public function generateInvoice(array $data)
     {
         $request = new SzamlaAgentRequest('generateInvoice', $data);
+        $response = $this->sendSzamlaAgentRequest($request);
+        $docResponse = new \DOMDocument();
+        $docResponse->loadXML($response->getBody()->getContents());
 
-        return  $this->sendSzamlaAgentRequest($request);
+        if (!SzamlaAgentUtil::isInvoiceResponseValid($docResponse)) {
+            libxml_use_internal_errors(true);
+            $this->logXmlErrors();
+            throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
+        }
+
+        /** @var \DOMElement $root */
+        $root = $docResponse->getElementsByTagName('xmlszamlavalasz')->item(0);
+
+        $invoiceResponse = InvoiceResponse::__set_state($root);
+
+        if (!$invoiceResponse->success === true) {
+            throw new SzamlazzClientException(
+                SzamlazzClientException::INVOICE_GENERATE_FAILED . $invoiceResponse->errorMessage
+            );
+        }
+
+        return $invoiceResponse;
     }
 
     protected function getUri($path)
@@ -160,7 +181,7 @@ class SzamlazzClient
 
     public function validateResponse(\DOMDocument $doc)
     {
-        if (!SzamlaAgentUtil::isResponseValid($doc)) {
+        if (!SzamlaAgentUtil::isTaxpayerResponseValid($doc)) {
             $this->logXmlErrors();
 
             return false;
