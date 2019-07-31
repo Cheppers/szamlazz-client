@@ -33,6 +33,16 @@ class TaxPayerResponse
     /**
      * @var string
      */
+    public $errorCode;
+
+    /**
+     * @var string
+     */
+    public $message;
+
+    /**
+     * @var bool
+     */
     public $taxpayerValidity;
 
     /**
@@ -44,7 +54,6 @@ class TaxPayerResponse
      * @var \Cheppers\SzamlazzClient\DataType\Address
      */
     public $address;
-
 
     public static function __set_state($root)
     {
@@ -89,12 +98,20 @@ class TaxPayerResponse
                             case 'funcCode':
                                 $instance->funcCode = $subElement->nodeValue;
                                 break;
+
+                            case 'errorCode':
+                                $instance->errorCode = $subElement->nodeValue;
+                                break;
+
+                            case 'message':
+                                $instance->message = $subElement->nodeValue;
+                                break;
                         }
                     }
                     break;
 
                 case 'taxpayerValidity':
-                    $instance->taxpayerValidity = $element->nodeValue;
+                    $instance->taxpayerValidity = $element->nodeValue === 'true';
                     break;
 
                 case 'taxpayerData':

@@ -1,13 +1,15 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
 use Cheppers\SzamlazzClient\SzamlazzClientException;
+use DOMDocument;
 
 class SzamlaAgentRequest
 {
+
     const XML_SCHEMA_CREATE_INVOICE = 'xmlszamla';
 
     const XML_SCHEMA_CREATE_REVERSE_INVOICE = 'xmlszamlast';
@@ -39,10 +41,42 @@ class SzamlaAgentRequest
      */
     public $fileName;
 
-    public function __construct(string $type, array $data)
+    /**
+     * @var string
+     */
+    protected $baseUrl = 'https://www.szamlazz.hu';
+
+    /**
+     * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
+     */
+    public function setFields(string $type, array $data)
     {
         $this->type = $type;
-        $this->setFieldData($type, $data);
+        switch ($this->type) {
+            case 'generateInvoice':
+                $this->fileName = 'action-xmlagentxmlfile';
+                $this->xmlName = static::XML_SCHEMA_CREATE_INVOICE;
+                $this->xsdDir = 'agent';
+                $this->entity = Invoice::__set_state($data);
+                break;
+
+            case 'generateReverseInvoice':
+                $this->fileName = 'action-szamla_agent_st';
+                $this->xmlName = static::XML_SCHEMA_CREATE_REVERSE_INVOICE;
+                $this->xsdDir = 'agentst';
+                break;
+
+            case 'getTaxPayer':
+                $this->fileName = 'action-szamla_agent_taxpayer';
+                $this->xmlName = static::XML_SCHEMA_TAXPAYER;
+                $this->xsdDir = 'taxpayer';
+                $this->entity = TaxPayer::__set_state($data);
+                break;
+
+            default:
+                // @todo Consider to use assert() instead.
+                throw new SzamlazzClientException(SzamlazzClientException::REQUEST_TYPE_NOT_EXISTS . ": {$type}");
+        }
     }
 
     /**
@@ -55,14 +89,14 @@ class SzamlaAgentRequest
         /** @var \DOMDocument $doc */
         $doc = $this->entity->buildXmlData($docBase);
         $doc->formatOutput = true;
-        print_r($doc->saveXML());
+
         return $doc->saveXML();
     }
 
-    public function getXmlBase(): \DOMDocument
+    public function getXmlBase(): DOMDocument
     {
         $xmlName = $this->xmlName;
-        $doc = new \DOMDocument('1.0', 'UTF-8');
+        $doc = new DOMDocument('1.0', 'UTF-8');
         /** @var \DOMElement $root */
         $root = $doc->createElementNS($this->getXmlNs($xmlName), $xmlName);
         $root = $doc->appendChild($root);
@@ -80,41 +114,13 @@ class SzamlaAgentRequest
         return $doc;
     }
 
-    protected function getSchemaLocation(string $xmlName): string
-    {
-        return "http://www.szamlazz.hu/{$xmlName} http://www.szamlazz.hu/docs/xsds/$this->xsdDir/{$xmlName}.xsd";
-    }
-
     public function getXmlNs(string $xmlName): string
     {
-        return "http://www.szamlazz.hu/{$xmlName}";
+        return "{$this->baseUrl}/{$xmlName}";
     }
 
-    /**
-     * @throws \Cheppers\SzamlazzClient\SzamlazzClientException
-     */
-    public function setFieldData(string $type, array $data)
+    protected function getSchemaLocation(string $xmlName): string
     {
-        switch ($type) {
-            case 'generateInvoice':
-                $this->fileName = 'action-xmlagentxmlfile';
-                $this->xmlName  = self::XML_SCHEMA_CREATE_INVOICE;
-                $this->xsdDir   = 'agent';
-                $this->entity   = Invoice::__set_state($data);
-                break;
-            case 'generateReverseInvoice':
-                $this->fileName = 'action-szamla_agent_st';
-                $this->xmlName  = self::XML_SCHEMA_CREATE_REVERSE_INVOICE;
-                $this->xsdDir   = 'agentst';
-                break;
-            case 'getTaxPayer':
-                $this->fileName = 'action-szamla_agent_taxpayer';
-                $this->xmlName  = self::XML_SCHEMA_TAXPAYER;
-                $this->xsdDir   = 'agent';
-                $this->entity   = TaxPayer::__set_state($data);
-                break;
-            default:
-                throw new SzamlazzClientException(SzamlazzClientException::REQUEST_TYPE_NOT_EXISTS . ": {$type}");
-        }
+        return "{$this->baseUrl}/{$xmlName} {$this->baseUrl}/szamla/docs/xsds/$this->xsdDir/{$xmlName}.xsd";
     }
 }

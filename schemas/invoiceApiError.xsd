@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+# Projekt: Magyar Online Számla Rendszer invoiceApi XML XSD séma
+# Author: NAV Informatikai Intézet
+
+# Version: v1.1 2019/02/05
+-->
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.nav.gov.hu/OSA/1.0/api"
+    xmlns:data="http://schemas.nav.gov.hu/OSA/1.0/data"
+    targetNamespace="http://schemas.nav.gov.hu/OSA/1.0/api"
+    elementFormDefault="qualified">
+
+    <xs:import namespace="http://schemas.nav.gov.hu/OSA/1.0/data" schemaLocation="invoiceData.xsd" />
+    <xs:simpleType name="FunctionCodeType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">Funkciókód típus</xs:documentation>
+            <xs:documentation xml:lang="en">Function code type</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OK">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Sikeres művelet</xs:documentation>
+                    <xs:documentation xml:lang="en">Successful operation</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ERROR">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Hiba</xs:documentation>
+                    <xs:documentation xml:lang="en">Error</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="EntityIdType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">Generált azonosító típus</xs:documentation>
+            <xs:documentation xml:lang="en">Generated ID type</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="30" />
+            <xs:minLength value="1" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="RequestVersionType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">Kérés/válasz verzió típus</xs:documentation>
+            <xs:documentation xml:lang="en">Request header type</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="1.0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Alapérték</xs:documentation>
+                    <xs:documentation xml:lang="en">Default</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="1.1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Adatminőség javítás</xs:documentation>
+                    <xs:documentation xml:lang="en">Data quality improvement</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="BasicHeaderType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">A kérés tranzakcionális adatai</xs:documentation>
+            <xs:documentation xml:lang="en">Transactional data of the request</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="requestId" type="EntityIdType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">A kérés/válasz azonosítója, minden üzenetváltásnál - adószámonként -
+                        egyedi
+                    </xs:documentation>
+                    <xs:documentation xml:lang="en">Identifier of the request/response, unique with the taxnumber in
+                        every data exchange transaction
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="timestamp" type="data:TimestampType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">A kérés/válasz keletkezésének UTC ideje</xs:documentation>
+                    <xs:documentation xml:lang="en">UTC time of the request/response</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="requestVersion" type="RequestVersionType" default="1.1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">A kérés/válasz verziószáma, hogy a hívó melyik interfész verzió
+                        szerint küld adatot és várja a választ
+                    </xs:documentation>
+                    <xs:documentation xml:lang="en">Request version number, indicating which datastructure the client
+                        sends data in, and in which the response is expected
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="BasicResponseType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">Alap válasz adatok</xs:documentation>
+            <xs:documentation xml:lang="en">Basic response data</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="header" type="BasicHeaderType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">A válasz tranzakcionális adatai</xs:documentation>
+                    <xs:documentation xml:lang="en">Transactional data of the response</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="result" type="BasicResultType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Alap válaszeredmény adatok</xs:documentation>
+                    <xs:documentation xml:lang="en">Basic result data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="BasicResultType">
+        <xs:annotation>
+            <xs:documentation xml:lang="hu">Alap válaszeredmény adatok</xs:documentation>
+            <xs:documentation xml:lang="en">Basic result data</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="funcCode" type="FunctionCodeType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Feldolgozási eredmény</xs:documentation>
+                    <xs:documentation xml:lang="en">Processing result</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="errorCode" type="data:SimpleText50NotBlankType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">A feldolgozási hibakód</xs:documentation>
+                    <xs:documentation xml:lang="en">Processing error code</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="message" type="data:SimpleText1024NotBlankType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="hu">Feldolgozási üzenet</xs:documentation>
+                    <xs:documentation xml:lang="en">Processing message</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="QueryTaxpayerResponse" type="BasicResponseType"/>
+</xs:schema>

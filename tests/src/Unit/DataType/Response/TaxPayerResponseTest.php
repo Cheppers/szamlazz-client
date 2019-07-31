@@ -40,7 +40,7 @@ class TaxPayerResponseTest extends TestCase
                     'requestId' => 'test_request_id',
                     'timestamp' => '2019-07-25T13:30:18.183Z',
                     'requestVersion' => '1.1',
-                    'taxpayerValidity' => 'false',
+                    'taxpayerValidity' => false,
                     'funcCode' => 'OK',
                     'taxpayerName' => 'Test Taxpayer',
                     'address' => $address,

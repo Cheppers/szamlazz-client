@@ -1,19 +1,20 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient;
 
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
-use Cheppers\SzamlazzClient\Utils\SzamlaAgentUtil;
+use DOMDocument;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 class SzamlazzClient
 {
+
     const API_URL = 'szamla/';
 
     const REQUEST_TIMEOUT = 30;
@@ -28,7 +29,18 @@ class SzamlazzClient
      */
     protected $logger;
 
+    /**
+     * @var string
+     */
     protected $baseUri = 'https://www.szamlazz.hu';
+
+    public function __construct(
+        ClientInterface $client,
+        LoggerInterface $logger
+    ) {
+        $this->client = $client;
+        $this->logger = $logger;
+    }
 
     /**
      * @return string
@@ -48,36 +60,54 @@ class SzamlazzClient
         return $this;
     }
 
-    public function __construct(ClientInterface $client, LoggerInterface $logger)
-    {
-        $this->client = $client;
-        $this->logger = $logger;
-    }
-
     /**
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
-    public function getTaxPayer(array $data): ?TaxPayerResponse
+    public function getTaxPayer(string $apiKey, string $taxpayerId): ?TaxPayerResponse
     {
-        $request = new SzamlaAgentRequest('getTaxPayer', $data);
-        $response = $this->sendSzamlaAgentRequest($request);
-        $docResponse = new \DOMDocument();
+        $requestData = new SzamlaAgentRequest();
+        $requestData->setFields(
+            'getTaxPayer',
+            [
+                'settings' => [
+                    'apiKey' => $apiKey,
+                ],
+                'taxpayerId' => $taxpayerId,
+            ]
+        );
+
+        $response = $this->sendSzamlaAgentRequest($requestData);
+        // @todo Check response Content-type.
+        $docResponse = new DOMDocument();
+
+        // @todo Error handling.
         $docResponse->loadXML($response->getBody()->getContents());
 
-        if (!SzamlaAgentUtil::isTaxpayerResponseValid($docResponse)) {
-            libxml_use_internal_errors(true);
-            $this->logXmlErrors();
-            throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
+        $errorsSuccess = Utils::validateTaxpayerSuccessResponse($docResponse);
+        if ($errorsSuccess) {
+            $errorsFail = Utils::validateTaxpayerErrorResponse($docResponse);
+            if ($errorsFail) {
+                Utils::logXmlErrors($this->logger, $errorsFail);
+
+                throw  new \Exception('Invalid response', 1);
+            }
         }
 
         /** @var \DOMElement $root */
-        $root = $docResponse->getElementsByTagName('QueryTaxpayerResponse')->item(0);
+        $root = $docResponse
+            ->getElementsByTagName('QueryTaxpayerResponse')
+            ->item(0);
 
         $taxpayer = TaxPayerResponse::__set_state($root);
 
-        if (!$taxpayer->taxpayerName && !$taxpayer->address) {
-            throw new SzamlazzClientException(SzamlazzClientException::TAXPAYER_NOT_EXIST);
+        if ($taxpayer->errorCode || $taxpayer->funcCode === 'ERROR') {
+            throw new \Exception($taxpayer->message, (int) $taxpayer->errorCode);
+        }
+
+        if (!$taxpayer->taxpayerName) {
+            // Not found.
+            return null;
         }
 
         return $taxpayer;
@@ -88,14 +118,17 @@ class SzamlazzClient
      */
     public function generateInvoice(array $data)
     {
-        $request = new SzamlaAgentRequest('generateInvoice', $data);
-        $response = $this->sendSzamlaAgentRequest($request);
-        $docResponse = new \DOMDocument();
+        $requestData = new SzamlaAgentRequest();
+        $requestData->setFields('generateInvoice', $data);
+
+        $response = $this->sendSzamlaAgentRequest($requestData);
+        $docResponse = new DOMDocument();
         $docResponse->loadXML($response->getBody()->getContents());
 
-        if (!SzamlaAgentUtil::isInvoiceResponseValid($docResponse)) {
-            libxml_use_internal_errors(true);
-            $this->logXmlErrors();
+        $errors = Utils::validateInvoiceResponse($docResponse);
+        if ($errors) {
+            Utils::logXmlErrors($this->logger, $errors);
+
             throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
         }
 
@@ -113,80 +146,50 @@ class SzamlazzClient
         return $invoiceResponse;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function sendSzamlaAgentRequest(SzamlaAgentRequest $requestData): ResponseInterface
+    {
+        return $this->sendPost(
+            self::API_URL,
+            [
+                'multipart' => [
+                    [
+                        'name' => $requestData->fileName,
+                        'contents' => fopen('data:text/plain,' . urlencode($requestData->buildXml()), 'rb'),
+                    ],
+                ],
+                'timeout' => static::REQUEST_TIMEOUT,
+            ]
+        );
+    }
+
     protected function getUri($path)
     {
         return $this->getBaseUri() . "/$path";
     }
 
-    /**
-     * @return \Psr\Http\Message\MessageInterface
-     */
-    protected function sendGet($path, array $options = [])
+    protected function sendGet($path, array $options = []): ResponseInterface
     {
         return $this->sendRequest('GET', $path, $options);
     }
 
-    /**
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    protected function sendPost($path, array $options = [])
+    protected function sendPost($path, array $options = []): ResponseInterface
     {
         return $this->sendRequest('POST', $path, $options);
     }
 
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function sendRequest($method, $path, array $options = [])
-    {
+    protected function sendRequest(
+        $method,
+        $path,
+        array $options = []
+    ): ResponseInterface {
         $uri = $this->getUri($path);
 
         return $this->client->request($method, $uri, $options);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function sendSzamlaAgentRequest(SzamlaAgentRequest $request): ResponseInterface
-    {
-        try {
-            $response = $this->sendPost(
-                self::API_URL,
-                [
-                    'multipart' => [
-                        [
-                            'name'     => $request->fileName,
-                            'contents' => fopen('data:text/plain,' . urlencode($request->buildXml()), 'rb'),
-                        ],
-                    ],
-                    'timeout' => static::REQUEST_TIMEOUT,
-                ]
-            );
-
-            return $response;
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    protected function logXmlErrors()
-    {
-        $errors = libxml_get_errors();
-        foreach ($errors as $error) {
-            $this->logger->error($error->message);
-        }
-        libxml_clear_errors();
-    }
-
-    public function validateResponse(\DOMDocument $doc)
-    {
-        if (!SzamlaAgentUtil::isTaxpayerResponseValid($doc)) {
-            $this->logXmlErrors();
-
-            return false;
-        }
-
-        return true;
     }
 }
