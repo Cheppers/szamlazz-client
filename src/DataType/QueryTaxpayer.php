@@ -4,8 +4,23 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-class TaxPayer
+class QueryTaxpayer extends RequestBase
 {
+    /**
+     * @var string
+     */
+    public $fileName = 'action-szamla_agent_taxpayer';
+
+    /**
+     * @var string
+     */
+    public $xsdDir = 'taxpayer';
+
+    /**
+     * @var string
+     */
+    public $xmlName = 'xmltaxpayer';
+
     /**
      * @var \Cheppers\SzamlazzClient\DataType\Settings
      */
@@ -19,7 +34,7 @@ class TaxPayer
     /**
      * @var string[]
      */
-    public $requiredFields = ['settings', 'taxPayerId'];
+    protected $requiredFields = ['settings', 'taxpayerId'];
 
     protected static $propertyMapping = [
         'settings'   => 'beallitasok',
@@ -48,22 +63,16 @@ class TaxPayer
         return $instance;
     }
 
-    public function isEmpty(): bool
-    {
-        foreach ($this->requiredFields as $field) {
-            if ($field === null) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function buildXmlData(\DOMDocument $doc): \DOMDocument
+    /**
+     * @throws \Exception
+     */
+    public function buildXmlString(): string
     {
         if ($this->isEmpty()) {
-            return $doc;
+            throw new \Exception('Missing required field');
         }
+
+        $doc = $this->getXmlBase();
 
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
@@ -80,6 +89,6 @@ class TaxPayer
             $doc = $this->{$internal}->buildXmlData($doc);
         }
 
-        return $doc;
+        return $doc->saveXML();
     }
 }

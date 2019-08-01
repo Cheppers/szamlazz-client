@@ -1,33 +1,28 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
-use Cheppers\SzamlazzClient\SzamlazzClientException;
-use DoctrineTest\InstantiatorTestAsset\AbstractClassAsset;
 
-class Invoice
+class GenerateInvoice extends RequestBase
 {
     /**
-     * {@inheritdoc}
+     * @var string
      */
-    protected $complexTypeName = 'xmlszamla';
+    public $fileName = 'action-xmlagentxmlfile';
 
     /**
-     * {@inheritdoc}
+     * @var string
      */
-    protected static $propertyMapping = [
-        'settings'    => 'beallitasok',
-        'header'      => 'fejlec',
-        'seller'      => 'elado',
-        'buyer'       => 'vevo',
-        'waybill'     => 'fuvarlevel',
-        'items'       => 'tetelek',
-        'buyerLedger' => 'vevoFokonyv',
-    ];
+    public $xsdDir = 'agent';
+
+    /**
+     * @var string
+     */
+    protected $xmlName = 'xmlszamla';
 
     /**
      * {@inheritdoc}
@@ -39,6 +34,17 @@ class Invoice
         'buyer',
         'items',
     ];
+    protected static $propertyMapping = [
+        'settings'    => 'beallitasok',
+        'header'      => 'fejlec',
+        'seller'      => 'elado',
+        'buyer'       => 'vevo',
+        'waybill'     => 'fuvarlevel',
+        'items'       => 'tetelek',
+        'buyerLedger' => 'vevoFokonyv',
+    ];
+
+
 
     /**
      * @var \Cheppers\SzamlazzClient\DataType\Settings
@@ -114,16 +120,16 @@ class Invoice
         return $instance;
     }
 
-    public function isEmpty(): bool
-    {
-        return $this->settings === null;
-    }
-
-    public function buildXmlData(\DOMDocument $doc): \DOMDocument
+    /**
+     * @throws \Exception
+     */
+    public function buildXmlString(): string
     {
         if ($this->isEmpty()) {
-            return $doc;
+            throw new \Exception('Missing required field');
         }
+
+        $doc = $this->getXmlBase();
 
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
@@ -145,6 +151,6 @@ class Invoice
             $doc = $this->{$internal}->buildXmlData($doc);
         }
 
-        return $doc;
+        return $doc->saveXML();
     }
 }

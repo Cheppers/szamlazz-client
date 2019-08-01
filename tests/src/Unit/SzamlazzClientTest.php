@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\Tests\Unit;
 
 use Cheppers\SzamlazzClient\DataType\Address;
+use Cheppers\SzamlazzClient\DataType\QueryTaxpayer;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\SzamlazzClient;
 use GuzzleHttp\Client;
@@ -25,40 +26,39 @@ class SzamlazzClientTest extends TestCase
 
     public function casesGetTaxPayer()
     {
-        $taxPayer = new TaxPayerResponse();
-        $taxPayer->requestId = '170_k8knfskxnjdn24p97errf7';
-        $taxPayer->timestamp = '2018-07-05T10:57:46.810Z';
-        $taxPayer->requestVersion = '1.0';
-        $taxPayer->funcCode = 'OK';
-        $taxPayer->taxpayerValidity = true;
-        $taxPayer->taxpayerName = 'My Name';
-        $taxPayer->address = new Address();
-        $taxPayer->address->countryCode = 'HU';
-        $taxPayer->address->postalCode = '1031';
-        $taxPayer->address->city = 'BUDAPEST';
-        $taxPayer->address->streetName = 'ZÁHONY';
-        $taxPayer->address->publicPlaceCategory = 'UTCA';
-        $taxPayer->address->number = '42';
+        $taxpayerBasic = new TaxPayerResponse();
+        $taxpayerBasic->requestId = '170_k8knfskxnjdn24p97errf7';
+        $taxpayerBasic->timestamp = '2018-07-05T10:57:46.810Z';
+        $taxpayerBasic->requestVersion = '1.0';
+        $taxpayerBasic->funcCode = 'OK';
+        $taxpayerBasic->taxpayerValidity = true;
+        $taxpayerBasic->taxpayerName = 'My Name';
+        $taxpayerBasic->address = new Address();
+        $taxpayerBasic->address->countryCode = 'HU';
+        $taxpayerBasic->address->postalCode = '1031';
+        $taxpayerBasic->address->city = 'BUDAPEST';
+        $taxpayerBasic->address->streetName = 'ZÁHONY';
+        $taxpayerBasic->address->publicPlaceCategory = 'UTCA';
+        $taxpayerBasic->address->number = '42';
 
         return [
             'basic' => [
-                $taxPayer,
-                implode("\n", [
-                    '<?xml version="1.0" encoding="UTF-8"?>',
+                $taxpayerBasic,
+                implode('', [
                     implode(' ', [
                         '<xmltaxpayer',
-                        'xmlns="https://www.szamlazz.hu/xmltaxpayer"',
+                        'xmlns="http://www.szamlazz.hu/xmltaxpayer"',
                         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-                        'xsi:schemaLocation="https://www.szamlazz.hu/xmltaxpayer',
-                        'https://www.szamlazz.hu/szamla/docs/xsds/taxpayer/xmltaxpayer.xsd">',
+                        'xsi:schemaLocation="http://www.szamlazz.hu/xmltaxpayer',
+                        'http://www.szamlazz.hu/szamla/docs/xsds/taxpayer/xmltaxpayer.xsd">',
                     ]),
-                    '  <beallitasok>',
-                    '    <szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
-                    '  </beallitasok>',
-                    '  <torzsszam>my-tax-payer-1</torzsszam>',
+                    '<beallitasok>',
+                    '<szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
+                    '</beallitasok>',
+                    '<torzsszam>my-tax-payer-1</torzsszam>',
                     '</xmltaxpayer>',
                 ]),
-                implode("\n", [
+                implode(PHP_EOL, [
                     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
                     implode(' ', [
                         '<QueryTaxpayerResponse',
@@ -87,21 +87,54 @@ class SzamlazzClientTest extends TestCase
                     '    </taxpayerData>',
                     '</QueryTaxpayerResponse>',
                 ]),
-                'my-api-key',
-                'my-tax-payer-1',
+                QueryTaxpayer::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                    ],
+                    'taxpayerId' => 'my-tax-payer-1',
+                ]),
             ],
-            //'not found' => [
-            //    null,
-            //    implode(PHP_EOL, [
-            /*        '<?xml version="1.0" encoding="UTF-8"?>',*/
-            //        '<Order>',
-            //        '<ERROR_CODE>5011</ERROR_CODE>',
-            //        '<HASH>myHash</HASH>',
-            //        '<ORDER_STATUS>NOT_FOUND</ORDER_STATUS>',
-            //        '</Order>'
-            //    ]),
-            //    'foo',
-            //],
+            'not found' => [
+                null,
+                implode('', [
+                    implode(' ', [
+                        '<xmltaxpayer',
+                        'xmlns="http://www.szamlazz.hu/xmltaxpayer"',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+                        'xsi:schemaLocation="http://www.szamlazz.hu/xmltaxpayer',
+                        'http://www.szamlazz.hu/szamla/docs/xsds/taxpayer/xmltaxpayer.xsd">',
+                    ]),
+                    '<beallitasok>',
+                    '<szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
+                    '</beallitasok>',
+                    '<torzsszam>my-tax-payer-2</torzsszam>',
+                    '</xmltaxpayer>',
+                ]),
+                implode(PHP_EOL, [
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+                    implode(' ', [
+                        '<QueryTaxpayerResponse',
+                        'xmlns="http://schemas.nav.gov.hu/OSA/1.0/api"',
+                        'xmlns:ns2="http://schemas.nav.gov.hu/OSA/1.0/data">',
+                    ]),
+                    '    <header>',
+                    '        <requestId>143487_dryvs4cmt8jarj4gikcmt8</requestId>',
+                    '        <timestamp>2019-08-01T12:04:45.784Z</timestamp>',
+                    '        <requestVersion>1.1</requestVersion>',
+                    '    </header>',
+                    '    <result>',
+                    '        <funcCode>OK</funcCode>',
+                    '    </result>',
+                    '    <taxpayerValidity>false</taxpayerValidity>',
+                    '</QueryTaxpayerResponse>',
+                ]),
+                QueryTaxpayer::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                    ],
+                    'taxpayerId' => 'my-tax-payer-2',
+                ]),
+            ],
         ];
     }
 
@@ -112,15 +145,14 @@ class SzamlazzClientTest extends TestCase
         ?TaxPayerResponse $expectedTaxPayer,
         string $expectedRequestBody,
         string $responseBody,
-        string $apiKey,
-        string $taxpayerId
+        QueryTaxpayer $queryTaxpayer
     ) {
         $container = [];
         $history = Middleware::history($container);
         $mock = new MockHandler([
             new Response(
                 200,
-                ['Content-Type' => 'application/xml'],
+                ['Content-Type' => 'application/octet-stream'],
                 $responseBody
             ),
             new RequestException(
@@ -135,7 +167,7 @@ class SzamlazzClientTest extends TestCase
         ]);
 
         $logger = new NullLogger();
-        $actual = (new SzamlazzClient($client, $logger))->getTaxPayer($apiKey, $taxpayerId);
+        $actual = (new SzamlazzClient($client, $logger))->getTaxpayer($queryTaxpayer);
 
         static::assertEquals($expectedTaxPayer, $actual);
 

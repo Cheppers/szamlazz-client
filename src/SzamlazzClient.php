@@ -4,13 +4,19 @@ declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient;
 
+use Cheppers\SzamlazzClient\DataType\GenerateInvoice;
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
-use Cheppers\SzamlazzClient\DataType\SzamlaAgentRequest;
+use Cheppers\SzamlazzClient\DataType\RequestBase;
+use Cheppers\SzamlazzClient\DataType\QueryTaxpayer;
 use DOMDocument;
+use DOMElement;
+use Exception;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 class SzamlazzClient
 {
@@ -20,12 +26,12 @@ class SzamlazzClient
     const REQUEST_TIMEOUT = 30;
 
     /**
-     * @var \GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     protected $client;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -61,28 +67,26 @@ class SzamlazzClient
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Exception
+     * @throws SzamlazzClientException
+     * @throws GuzzleException
+     * @throws ReflectionException
+     * @throws Exception
      */
-    public function getTaxPayer(string $apiKey, string $taxpayerId): ?TaxPayerResponse
+    public function getTaxpayer(QueryTaxpayer $queryTaxpayer): ?TaxPayerResponse
     {
-        $requestData = new SzamlaAgentRequest();
-        $requestData->setFields(
-            'getTaxPayer',
-            [
-                'settings' => [
-                    'apiKey' => $apiKey,
-                ],
-                'taxpayerId' => $taxpayerId,
-            ]
-        );
+        $requestData = $queryTaxpayer->buildXmlString();
 
-        $response = $this->sendSzamlaAgentRequest($requestData);
-        // @todo Check response Content-type.
+        $response = $this->sendSzamlaAgentRequest($queryTaxpayer->fileName, $requestData);
+
+        if ($response->getHeader('Content-Type')[0] !== 'application/octet-stream') {
+            throw  new Exception('Invalid response content type', 53);
+        }
+
         $docResponse = new DOMDocument();
 
-        // @todo Error handling.
-        $docResponse->loadXML($response->getBody()->getContents());
+        if ($docResponse->loadXML($response->getBody()->getContents()) === false) {
+            throw  new Exception('Response XML cannot be loaded', 57);
+        }
 
         $errorsSuccess = Utils::validateTaxpayerSuccessResponse($docResponse);
         if ($errorsSuccess) {
@@ -90,11 +94,11 @@ class SzamlazzClient
             if ($errorsFail) {
                 Utils::logXmlErrors($this->logger, $errorsFail);
 
-                throw  new \Exception('Invalid response', 1);
+                throw  new Exception('Invalid response', 57);
             }
         }
 
-        /** @var \DOMElement $root */
+        /** @var DOMElement $root */
         $root = $docResponse
             ->getElementsByTagName('QueryTaxpayerResponse')
             ->item(0);
@@ -102,7 +106,7 @@ class SzamlazzClient
         $taxpayer = TaxPayerResponse::__set_state($root);
 
         if ($taxpayer->errorCode || $taxpayer->funcCode === 'ERROR') {
-            throw new \Exception($taxpayer->message, (int) $taxpayer->errorCode);
+            throw new Exception($taxpayer->message, (int) $taxpayer->errorCode);
         }
 
         if (!$taxpayer->taxpayerName) {
@@ -114,14 +118,14 @@ class SzamlazzClient
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
+     * @throws GuzzleException
      */
-    public function generateInvoice(array $data)
+    public function generateInvoice(GenerateInvoice $invoice)
     {
-        $requestData = new SzamlaAgentRequest();
-        $requestData->setFields('generateInvoice', $data);
+        $requestData = $invoice->buildXmlString();
 
-        $response = $this->sendSzamlaAgentRequest($requestData);
+        $response = $this->sendSzamlaAgentRequest($invoice->fileName, $requestData);
         $docResponse = new DOMDocument();
         $docResponse->loadXML($response->getBody()->getContents());
 
@@ -132,14 +136,14 @@ class SzamlazzClient
             throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
         }
 
-        /** @var \DOMElement $root */
+        /** @var DOMElement $root */
         $root = $docResponse->getElementsByTagName('xmlszamlavalasz')->item(0);
 
         $invoiceResponse = InvoiceResponse::__set_state($root);
 
         if (!$invoiceResponse->success === true) {
             throw new SzamlazzClientException(
-                SzamlazzClientException::INVOICE_GENERATE_FAILED . $invoiceResponse->errorMessage
+                SzamlazzClientException::INVOICE_GENERATE_FAILED . ' ' . $invoiceResponse->errorMessage
             );
         }
 
@@ -147,17 +151,19 @@ class SzamlazzClient
     }
 
     /**
-     * @throws \Exception
+     * @throws SzamlazzClientException
+     * @throws GuzzleException
+     * @throws ReflectionException
      */
-    public function sendSzamlaAgentRequest(SzamlaAgentRequest $requestData): ResponseInterface
+    public function sendSzamlaAgentRequest(string $fileName, string $xml): ResponseInterface
     {
         return $this->sendPost(
             self::API_URL,
             [
                 'multipart' => [
                     [
-                        'name' => $requestData->fileName,
-                        'contents' => fopen('data:text/plain,' . urlencode($requestData->buildXml()), 'rb'),
+                        'name' => $fileName,
+                        'contents' => fopen('data:text/plain,' . urlencode($xml), 'rb'),
                     ],
                 ],
                 'timeout' => static::REQUEST_TIMEOUT,
@@ -170,18 +176,24 @@ class SzamlazzClient
         return $this->getBaseUri() . "/$path";
     }
 
-    protected function sendGet($path, array $options = []): ResponseInterface
+    /**
+     * @throws GuzzleException
+     */
+    protected function sendGet(string $path, array $options = []): ResponseInterface
     {
         return $this->sendRequest('GET', $path, $options);
     }
 
-    protected function sendPost($path, array $options = []): ResponseInterface
+    /**
+     * @throws GuzzleException
+     */
+    protected function sendPost(string $path, array $options = []): ResponseInterface
     {
         return $this->sendRequest('POST', $path, $options);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     protected function sendRequest(
         $method,
