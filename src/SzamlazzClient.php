@@ -5,7 +5,9 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient;
 
 use Cheppers\SzamlazzClient\DataType\GenerateInvoice;
+use Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice;
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
+use Cheppers\SzamlazzClient\DataType\Response\ReverseInvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\DataType\RequestBase;
 use Cheppers\SzamlazzClient\DataType\QueryTaxpayer;
@@ -121,7 +123,7 @@ class SzamlazzClient
      * @throws Exception
      * @throws GuzzleException
      */
-    public function generateInvoice(GenerateInvoice $invoice)
+    public function generateInvoice(GenerateInvoice $invoice): ?InvoiceResponse
     {
         $requestData = $invoice->buildXmlString();
 
@@ -148,6 +150,23 @@ class SzamlazzClient
         }
 
         return $invoiceResponse;
+    }
+
+    /**
+     * @throws Exception
+     * @throws GuzzleException
+     */
+    public function generateReverseInvoice(GenerateReverseInvoice $reverseInvoice): ?ReverseInvoiceResponse
+    {
+        $requestData = $reverseInvoice->buildXmlString();
+
+        $response = $this->sendSzamlaAgentRequest($reverseInvoice->fileName, $requestData);
+
+        if ($response->getHeader('Content-Type')[0] !== 'application/pdf') {
+            throw  new Exception('Invalid response content type', 53);
+        }
+
+        return ReverseInvoiceResponse::__set_state($response);
     }
 
     /**

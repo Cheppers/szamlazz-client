@@ -5,82 +5,61 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
-use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
-use Exception;
+use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 
-class GenerateInvoice extends RequestBase
+class GenerateReverseInvoice extends RequestBase
 {
     /**
      * @var string
      */
-    public $fileName = 'action-xmlagentxmlfile';
+    public $fileName = 'action-szamla_agent_st';
 
     /**
      * @var string
      */
-    public $xsdDir = 'agent';
+    protected $xsdDir = 'agentst';
 
     /**
      * @var string
      */
-    protected $xmlName = 'xmlszamla';
+    protected $xmlName = 'xmlszamlast';
 
     /**
-     * {@inheritdoc}
+     * @var string[]
      */
     protected $requiredFields = [
         'settings',
         'header',
         'seller',
         'buyer',
-        'items',
     ];
+
     protected static $propertyMapping = [
         'settings'    => 'beallitasok',
         'header'      => 'fejlec',
         'seller'      => 'elado',
         'buyer'       => 'vevo',
-        'waybill'     => 'fuvarlevel',
-        'items'       => 'tetelek',
-        'buyerLedger' => 'vevoFokonyv',
     ];
 
-
-
     /**
-     * @var Settings
+     * @var \Cheppers\SzamlazzClient\DataType\Settings
      */
     public $settings;
 
     /**
-     * @var InvoiceHeader
+     * @var \Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader
      */
     public $header;
 
     /**
-     * @var Buyer
-     */
-    public $buyer;
-
-    /**
-     * @var BuyerLedger
-     */
-    public $buyerLedger;
-
-    /**
-     * @var Seller
+     * @var \Cheppers\SzamlazzClient\DataType\Seller
      */
     public $seller;
 
     /**
-     * @var Waybill
+     * @var \Cheppers\SzamlazzClient\DataType\Buyer
      */
-    public $waybill;
-
-    /**
-     * @var Item[]
-     */
-    public $items = [];
+    public $buyer;
 
     public static function __set_state($values)
     {
@@ -96,24 +75,13 @@ class GenerateInvoice extends RequestBase
                     $instance->settings = Settings::__set_state($value);
                     break;
                 case 'header':
-                    $instance->header = InvoiceHeader::__set_state($value);
+                    $instance->header = ReverseInvoiceHeader::__set_state($value);
                     break;
                 case 'buyer':
                     $instance->buyer = Buyer::__set_state($value);
                     break;
-                case 'buyerLedger':
-                    $instance->buyerLedger = BuyerLedger::__set_state($value);
-                    break;
                 case 'seller':
                     $instance->seller = Seller::__set_state($value);
-                    break;
-                case 'waybill':
-                    $instance->waybill = Waybill::__set_state($value);
-                    break;
-                case 'items':
-                    foreach ($value as $item) {
-                        $instance->items[] = Item::__set_state($item);
-                    }
                     break;
             }
         }
@@ -122,12 +90,12 @@ class GenerateInvoice extends RequestBase
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function buildXmlString(): string
     {
         if ($this->isEmpty()) {
-            throw new Exception('Missing required field');
+            throw new \Exception('Missing required field');
         }
 
         $doc = $this->getXmlBase();
@@ -135,17 +103,6 @@ class GenerateInvoice extends RequestBase
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
             if (!in_array($internal, $this->requiredFields) && !$value) {
-                continue;
-            }
-
-            if ($internal === 'items') {
-                $items = $doc->createElement('tetelek');
-                foreach ($this->items as $item) {
-                    $doc = $item->buildXmlData($doc);
-                    $itemElement = $doc->getElementsByTagName('tetel')->item(0);
-                    $items->appendChild($itemElement);
-                }
-                $doc->documentElement->appendChild($items);
                 continue;
             }
 

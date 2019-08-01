@@ -5,13 +5,14 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType;
 
 use DOMDocument;
+use DOMElement;
 
-class RequestBase
+abstract class RequestBase
 {
     /**
      * @var string
      */
-    protected $fileName = '';
+    public $fileName = '';
 
     /**
      * @var string[]
@@ -33,11 +34,13 @@ class RequestBase
      */
     protected $baseUrl = 'http://www.szamlazz.hu';
 
+    abstract public function buildXmlString(): string;
+
     public function getXmlBase(): DOMDocument
     {
         $xmlName = $this->xmlName;
         $doc = new DOMDocument('1.0', 'UTF-8');
-        /** @var \DOMElement $root */
+        /** @var DOMElement $root */
         $root = $doc->createElementNS($this->getXmlNs($xmlName), $xmlName);
         $root = $doc->appendChild($root);
         $root->setAttributeNS(
