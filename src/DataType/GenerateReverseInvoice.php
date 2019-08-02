@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
+use Cheppers\SzamlazzClient\DataType\Settings\ReverseInvoiceSettings;
 
 class GenerateReverseInvoice extends RequestBase
 {
@@ -42,22 +42,22 @@ class GenerateReverseInvoice extends RequestBase
     ];
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Settings
+     * @var ReverseInvoiceSettings
      */
     public $settings;
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader
+     * @var ReverseInvoiceHeader
      */
     public $header;
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Seller
+     * @var Seller
      */
     public $seller;
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Buyer
+     * @var Buyer
      */
     public $buyer;
 
@@ -72,7 +72,7 @@ class GenerateReverseInvoice extends RequestBase
 
             switch ($key) {
                 case 'settings':
-                    $instance->settings = Settings::__set_state($value);
+                    $instance->settings = ReverseInvoiceSettings::__set_state($value);
                     break;
                 case 'header':
                     $instance->header = ReverseInvoiceHeader::__set_state($value);

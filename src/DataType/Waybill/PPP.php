@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class PPP
+class PPP extends Base
 {
 
     /**
@@ -26,4 +26,9 @@ class PPP
      * @var string
      */
     public $barcodePostfix;
+
+    public function isEmpty(): bool
+    {
+        return $this->barcodePrefix === null;
+    }
 }

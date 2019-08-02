@@ -18,7 +18,7 @@ class Seller extends Base
     protected static $propertyMapping = [
         'bank'              => 'bank',
         'bankAccountNumber' => 'bankszamlaszam',
-        'emailReplyto'      => 'emailReplyto',
+        'emailReplyTo'      => 'emailReplyto',
         'emailSubject'      => 'emailTargy',
         'emailBody'         => 'emailSzoveg',
         'signerName'        => 'alairoNeve',
@@ -37,7 +37,7 @@ class Seller extends Base
     /**
      * @var string
      */
-    public $emailReplyto;
+    public $emailReplyTo;
 
     /**
      * @var string

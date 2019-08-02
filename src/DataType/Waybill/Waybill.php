@@ -8,7 +8,6 @@ use Cheppers\SzamlazzClient\DataType\Base;
 
 class Waybill extends Base
 {
-
     /**
      * {@inheritdoc}
      */
@@ -71,5 +70,52 @@ class Waybill extends Base
     public function isEmpty(): bool
     {
         return false;
+    }
+
+    public static function __set_state($values)
+    {
+        $instance = new static();
+
+        foreach ($values as $key => $value) {
+            if (!property_exists($instance, $key)) {
+                continue;
+            }
+
+            switch ($key) {
+                case 'destination':
+                    $instance->destination = $value;
+                    break;
+
+                case 'parcel':
+                    $instance->parcel = $value;
+                    break;
+
+                case 'comment':
+                    $instance->comment = $value;
+                    break;
+
+                case 'barcode':
+                    $instance->barcode = $value;
+                    break;
+
+                case 'tof':
+                    $instance->tof = Transoflex::__set_state($value);
+                    break;
+
+                case 'ppp':
+                    $instance->ppp = PPP::__set_state($value);
+                    break;
+
+                case 'sprinter':
+                    $instance->sprinter = Sprinter::__set_state($value);
+                    break;
+
+                case 'mpl':
+                    $instance->mpl = MPL::__set_state($value);
+                    break;
+            }
+        }
+
+        return $instance;
     }
 }

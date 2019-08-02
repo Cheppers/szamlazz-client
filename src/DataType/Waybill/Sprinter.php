@@ -6,9 +6,8 @@ namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class Sprinter
+class Sprinter extends Base
 {
-
     /**
      * {@inheritdoc}
      */
@@ -50,4 +49,9 @@ class Sprinter
      * @var string
      */
     public $shippingTime;
+
+    public function isEmpty(): bool
+    {
+        return $this->id === null;
+    }
 }

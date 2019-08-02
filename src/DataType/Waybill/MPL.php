@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class MPL
+class MPL extends Base
 {
 
     /**
@@ -53,4 +53,9 @@ class MPL
      * @var double
      */
     public $insuredValue;
+
+    public function isEmpty(): bool
+    {
+        return $this->buyerCode === null;
+    }
 }

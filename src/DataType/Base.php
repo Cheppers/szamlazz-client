@@ -32,6 +32,7 @@ abstract class Base
             if (!property_exists($instance, $key)) {
                 continue;
             }
+
             $instance->{$key} = $value;
         }
 

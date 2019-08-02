@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
+use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
 use Exception;
 
@@ -45,10 +46,8 @@ class GenerateInvoice extends RequestBase
         'buyerLedger' => 'vevoFokonyv',
     ];
 
-
-
     /**
-     * @var Settings
+     * @var InvoiceSettings
      */
     public $settings;
 
@@ -93,7 +92,7 @@ class GenerateInvoice extends RequestBase
 
             switch ($key) {
                 case 'settings':
-                    $instance->settings = Settings::__set_state($value);
+                    $instance->settings = InvoiceSettings::__set_state($value);
                     break;
                 case 'header':
                     $instance->header = InvoiceHeader::__set_state($value);

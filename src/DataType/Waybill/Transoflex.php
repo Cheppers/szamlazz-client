@@ -6,7 +6,7 @@ namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class Transoflex
+class Transoflex extends Base
 {
 
     /**
@@ -50,4 +50,9 @@ class Transoflex
      * @var string
      */
     public $service;
+
+    public function isEmpty(): bool
+    {
+        return $this->id === null;
+    }
 }

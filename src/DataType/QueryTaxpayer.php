@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
+use Cheppers\SzamlazzClient\DataType\Settings\SettingsBase;
+
 class QueryTaxpayer extends RequestBase
 {
     /**
@@ -22,7 +24,7 @@ class QueryTaxpayer extends RequestBase
     public $xmlName = 'xmltaxpayer';
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\Settings
+     * @var SettingsBase
      */
     public $settings;
 
@@ -52,7 +54,7 @@ class QueryTaxpayer extends RequestBase
 
             switch ($key) {
                 case 'settings':
-                    $instance->settings = Settings::__set_state($value);
+                    $instance->settings = SettingsBase::__set_state($value);
                     break;
                 case 'taxpayerId':
                     $instance->taxpayerId = $value;

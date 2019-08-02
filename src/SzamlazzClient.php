@@ -128,13 +128,12 @@ class SzamlazzClient
         $requestData = $invoice->buildXmlString();
 
         $response = $this->sendSzamlaAgentRequest($invoice->fileName, $requestData);
+
         $docResponse = new DOMDocument();
         $docResponse->loadXML($response->getBody()->getContents());
-
         $errors = Utils::validateInvoiceResponse($docResponse);
         if ($errors) {
             Utils::logXmlErrors($this->logger, $errors);
-
             throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
         }
 

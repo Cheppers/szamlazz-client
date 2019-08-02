@@ -10,13 +10,14 @@ class InvoiceResponse
 {
 
     protected static $propertyMapping = [
-        'success'       => 'sikeres',
-        'errorCode'     => 'hibakod',
-        'errorMessage'  => 'hibauzenet',
-        'invoiceNumber' => 'szamlaszam',
-        'netPrice'      => 'szamlanetto',
-        'grossAmount'   => 'szamlabrutto',
-        'pdfData'       => 'pdf',
+        'success'         => 'sikeres',
+        'errorCode'       => 'hibakod',
+        'errorMessage'    => 'hibauzenet',
+        'invoiceNumber'   => 'szamlaszam',
+        'netPrice'        => 'szamlanetto',
+        'grossAmount'     => 'szamlabrutto',
+        'buyerAccountUrl' => 'vevoifiokurl',
+        'pdfData'         => 'pdf',
     ];
 
     /**
@@ -48,6 +49,11 @@ class InvoiceResponse
      * @var int
      */
     public $grossAmount;
+
+    /**
+     * @var string
+     */
+    public $buyerAccountUrl;
 
     /**
      * @var string
@@ -88,6 +94,10 @@ class InvoiceResponse
 
                 case 'szamlabrutto':
                     $instance->grossAmount = $element->nodeValue;
+                    break;
+
+                case 'vevoifiokurl':
+                    $instance->buyerAccountUrl = $element->nodeValue;
                     break;
 
                 case 'pdf':
