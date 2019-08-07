@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 
-class SzamlazzClient
+class SzamlazzClient implements SzamlazzClientInterface
 {
 
     const API_URL = 'szamla/';
@@ -28,12 +28,12 @@ class SzamlazzClient
     const REQUEST_TIMEOUT = 30;
 
     /**
-     * @var ClientInterface
+     * @var \GuzzleHttp\ClientInterface
      */
     protected $client;
 
     /**
-     * @var LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 

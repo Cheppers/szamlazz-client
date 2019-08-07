@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
@@ -36,7 +36,10 @@ class QueryTaxpayer extends RequestBase
     /**
      * @var string[]
      */
-    protected $requiredFields = ['settings', 'taxpayerId'];
+    protected $requiredFields = [
+        'settings',
+        'taxpayerId',
+    ];
 
     protected static $propertyMapping = [
         'settings'   => 'beallitasok',
@@ -56,6 +59,7 @@ class QueryTaxpayer extends RequestBase
                 case 'settings':
                     $instance->settings = SettingsBase::__set_state($value);
                     break;
+
                 case 'taxpayerId':
                     $instance->taxpayerId = $value;
                     break;
@@ -63,6 +67,11 @@ class QueryTaxpayer extends RequestBase
         }
 
         return $instance;
+    }
+
+    public function __construct()
+    {
+        $this->settings = new SettingsBase();
     }
 
     /**
@@ -85,6 +94,7 @@ class QueryTaxpayer extends RequestBase
             if ($internal === 'taxpayerId') {
                 $element = $doc->createElement('torzsszam', (string) $this->taxpayerId);
                 $doc->documentElement->appendChild($element);
+
                 continue;
             }
 
