@@ -9,7 +9,6 @@ use Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice;
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\ReverseInvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
-use Cheppers\SzamlazzClient\DataType\RequestBase;
 use Cheppers\SzamlazzClient\DataType\QueryTaxpayer;
 use DOMDocument;
 use DOMElement;
@@ -28,12 +27,12 @@ class SzamlazzClient implements SzamlazzClientInterface
     const REQUEST_TIMEOUT = 30;
 
     /**
-     * @var \GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     protected $client;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -69,7 +68,6 @@ class SzamlazzClient implements SzamlazzClientInterface
     }
 
     /**
-     * @throws SzamlazzClientException
      * @throws GuzzleException
      * @throws ReflectionException
      * @throws Exception
@@ -127,12 +125,17 @@ class SzamlazzClient implements SzamlazzClientInterface
 
         $response = $this->sendSzamlaAgentRequest($invoice->fileName, $requestData);
 
+        if ($response->getHeader('Content-Type')[0] !== 'application/octet-stream') {
+            throw  new Exception('Invalid response content type', 53);
+        }
+
         $docResponse = new DOMDocument();
         $docResponse->loadXML($response->getBody()->getContents());
         $errors = Utils::validateInvoiceResponse($docResponse);
         if ($errors) {
             Utils::logXmlErrors($this->logger, $errors);
-            throw new SzamlazzClientException(SzamlazzClientException::RESPONSE_TYPE_NOT_VALID);
+
+            throw  new Exception('Invalid response', 57);
         }
 
         /** @var DOMElement $root */
@@ -141,9 +144,7 @@ class SzamlazzClient implements SzamlazzClientInterface
         $invoiceResponse = InvoiceResponse::__set_state($root);
 
         if (!$invoiceResponse->success === true) {
-            throw new SzamlazzClientException(
-                SzamlazzClientException::INVOICE_GENERATE_FAILED . ' ' . $invoiceResponse->errorMessage
-            );
+            throw  new Exception($invoiceResponse->errorMessage, $invoiceResponse->errorCode);
         }
 
         return $invoiceResponse;
@@ -158,16 +159,21 @@ class SzamlazzClient implements SzamlazzClientInterface
         $requestData = $reverseInvoice->buildXmlString();
 
         $response = $this->sendSzamlaAgentRequest($reverseInvoice->fileName, $requestData);
-
-        if ($response->getHeader('Content-Type')[0] !== 'application/pdf') {
+        if ($response->getHeader('Content-Type')[0] !== 'application/pdf'
+            && $response->getHeader('Content-Type')[0] !== 'text/html;charset=UTF-8') {
             throw  new Exception('Invalid response content type', 53);
         }
 
-        return ReverseInvoiceResponse::__set_state($response);
+        $reverseInvoiceResponse = ReverseInvoiceResponse::__set_state($response);
+
+        if ($reverseInvoiceResponse->errorCode) {
+            throw  new Exception($reverseInvoiceResponse->errorMessage, $reverseInvoiceResponse->errorCode);
+        }
+
+        return $reverseInvoiceResponse;
     }
 
     /**
-     * @throws SzamlazzClientException
      * @throws GuzzleException
      * @throws ReflectionException
      */
@@ -190,14 +196,6 @@ class SzamlazzClient implements SzamlazzClientInterface
     protected function getUri($path)
     {
         return $this->getBaseUri() . "/$path";
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    protected function sendGet(string $path, array $options = []): ResponseInterface
-    {
-        return $this->sendRequest('GET', $path, $options);
     }
 
     /**

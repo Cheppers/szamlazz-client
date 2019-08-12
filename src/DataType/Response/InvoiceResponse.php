@@ -73,11 +73,11 @@ class InvoiceResponse
 
             switch ($element->nodeName) {
                 case 'sikeres':
-                    $instance->success = $element->nodeValue;
+                    $instance->success = $element->nodeValue === 'true' ? true : false;
                     break;
 
                 case 'hibakod':
-                    $instance->errorCode = $element->nodeValue;
+                    $instance->errorCode = (int) $element->nodeValue;
                     break;
 
                 case 'hibauzenet':

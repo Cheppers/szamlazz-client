@@ -69,7 +69,7 @@ class ReverseInvoiceResponse
 
             switch ($key) {
                 case 'szlahu_kintlevoseg':
-                    $instance->debit = $values[0];
+                    $instance->debit = (int) $values[0];
                     break;
 
                 case 'szlahu_vevoifiokurl':
@@ -77,7 +77,7 @@ class ReverseInvoiceResponse
                     break;
 
                 case 'szlahu_nettovegosszeg':
-                    $instance->nettoTotal = $values[0];
+                    $instance->nettoTotal = (int) $values[0];
                     break;
 
                 case 'szlahu_szamlaszam':
@@ -85,7 +85,7 @@ class ReverseInvoiceResponse
                     break;
 
                 case 'szlahu_bruttovegosszeg':
-                    $instance->grossTotal = $values[0];
+                    $instance->grossTotal = (int) $values[0];
                     break;
 
                 case 'szlahu_error':
@@ -93,7 +93,7 @@ class ReverseInvoiceResponse
                     break;
 
                 case 'szlahu_error_code':
-                    $instance->errorCode = $values[0];
+                    $instance->errorCode = (int) $values[0];
                     break;
             }
         }

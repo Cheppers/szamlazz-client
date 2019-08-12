@@ -286,10 +286,10 @@ class SzamlazzClientTest extends TestCase
         (new SzamlazzClient($client, $logger))->getTaxpayer($queryTaxpayer);
     }
 
-    public function casesGenerateInvoice()
+    public function casesGenerateInvoiceSuccess()
     {
         $invoiceResponse = new InvoiceResponse();
-        $invoiceResponse->success = 'true';
+        $invoiceResponse->success = true;
         $invoiceResponse->invoiceNumber = 'E-CHPPR-2019-487';
         $invoiceResponse->netPrice = '2000';
         $invoiceResponse->grossAmount = '2540';
@@ -507,9 +507,9 @@ class SzamlazzClientTest extends TestCase
     }
 
     /**
-     * @dataProvider casesGenerateInvoice
+     * @dataProvider casesGenerateInvoiceSuccess
      */
-    public function testGenerateInvoice(
+    public function testGenerateInvoiceSuccess(
         InvoiceResponse $expectedInvoiceResponse,
         string $expectedRequestBody,
         GenerateInvoice $inputData,
@@ -555,7 +555,177 @@ class SzamlazzClientTest extends TestCase
         static::assertContains($expectedRequestBody, $request->getBody()->getContents());
     }
 
-    public function casesGenerateReverseInvoice()
+    public function casesGenerateInvoiceFailed()
+    {
+        return [
+            'wrong header' => [
+                new Exception('Invalid response content type', 53),
+                GenerateInvoice::__set_state([
+                    'settings' => [
+                        'apiKey'               => 'my-test-api-key',
+                        'eInvoice'             => true,
+                        'invoiceDownload'      => true,
+                    ],
+                    'header' => [
+                        'issueDate'         => '2019-08-03',
+                        'fulfillmentDate'   => '2019-08-03',
+                        'paymentDue'        => '2019-08-03',
+                        'paymentMethod'     => 'card',
+                        'currency'          => 'HUF',
+                        'invoiceLanguage'   => 'hu',
+                    ],
+                    'seller' => [],
+                    'buyer' => [
+                        'name'          => 'Test Name',
+                        'zip'           => '1122',
+                        'city'          => 'Budapest',
+                        'address'       => 'Fo utca 13.',
+                    ],
+                    'items' => [
+                        [
+                            'title'           => 'Product 01',
+                            'quantity'        => 1.0,
+                            'quantityUnit'    => 'db',
+                            'netUnitPrice'    => 1000,
+                            'vat'             => 27,
+                            'netPrice'        => 1000,
+                            'vatAmount'       => 270,
+                            'grossAmount'     => 1270,
+                        ],
+                    ]
+                ]),
+                [
+                    'Content-Type' => 'application/pdf'
+                ],
+                '',
+            ],
+            'invalid response' => [
+                new Exception('Invalid response', 57),
+                GenerateInvoice::__set_state([
+                    'settings' => [
+                        'apiKey'               => 'my-test-api-key',
+                        'eInvoice'             => true,
+                        'invoiceDownload'      => true,
+                    ],
+                    'header' => [
+                        'issueDate'         => '2019-08-03',
+                        'fulfillmentDate'   => '2019-08-03',
+                        'paymentDue'        => '2019-08-03',
+                        'paymentMethod'     => 'card',
+                        'currency'          => 'HUF',
+                        'invoiceLanguage'   => 'hu',
+                    ],
+                    'seller' => [],
+                    'buyer' => [
+                        'name'          => 'Test Name',
+                        'zip'           => '1122',
+                        'city'          => 'Budapest',
+                        'address'       => 'Fo utca 13.',
+                    ],
+                    'items' => [
+                        [
+                            'title'           => 'Product 01',
+                            'quantity'        => 1.0,
+                            'quantityUnit'    => 'db',
+                            'netUnitPrice'    => 1000,
+                            'vat'             => 27,
+                            'netPrice'        => 1000,
+                            'vatAmount'       => 270,
+                            'grossAmount'     => 1270,
+                        ],
+                    ]
+                ]),
+                [
+                    'Content-Type' => 'application/octet-stream'
+                ],
+                '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><wrongTagName/>',
+            ],
+            'response with error code' => [
+                new Exception('wrong response', 3),
+                GenerateInvoice::__set_state([
+                    'settings' => [
+                        'apiKey'               => 'my-test-api-key',
+                        'eInvoice'             => true,
+                        'invoiceDownload'      => true,
+                    ],
+                    'header' => [
+                        'issueDate'         => '2019-08-03',
+                        'fulfillmentDate'   => '2019-08-03',
+                        'paymentDue'        => '2019-08-03',
+                        'paymentMethod'     => 'card',
+                        'currency'          => 'HUF',
+                        'invoiceLanguage'   => 'hu',
+                    ],
+                    'seller' => [],
+                    'buyer' => [
+                        'name'          => 'Test Name',
+                        'zip'           => '1122',
+                        'city'          => 'Budapest',
+                        'address'       => 'Fo utca 13.',
+                    ],
+                    'items' => [
+                        [
+                            'title'           => 'Product 01',
+                            'quantity'        => 1.0,
+                            'quantityUnit'    => 'db',
+                            'netUnitPrice'    => 1000,
+                            'vat'             => 27,
+                            'netPrice'        => 1000,
+                            'vatAmount'       => 270,
+                            'grossAmount'     => 1270,
+                        ],
+                    ]
+                ]),
+                [
+                    'Content-Type' => 'application/octet-stream'
+                ],
+                implode(PHP_EOL, [
+                    '<?xml version="1.0" encoding="UTF-8"?>',
+                    implode(' ', [
+                        '<xmlszamlavalasz',
+                        'xmlns="http://www.szamlazz.hu/xmlszamlavalasz"',
+                        'xmlns:ns2="http://www.w3.org/2001/XMLSchema-instance">',
+                    ]),
+                    '    <sikeres>false</sikeres>',
+                    '    <hibakod>3</hibakod>',
+                    '    <hibauzenet>wrong response</hibauzenet>',
+                    '</xmlszamlavalasz>',
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesGenerateInvoiceFailed
+     */
+    public function testGenerateInvoiceFailed(
+        Exception $expectedException,
+        GenerateInvoice $generateInvoice,
+        array $responseHeader,
+        string $responseBody
+    ) {
+        $container = [];
+        $history = Middleware::history($container);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                $responseHeader,
+                $responseBody
+            )
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+        $client = new Client([
+            'handler' => $handlerStack,
+        ]);
+
+        $logger = new NullLogger();
+
+        static::expectExceptionObject($expectedException);
+        (new SzamlazzClient($client, $logger))->generateInvoice($generateInvoice);
+    }
+
+    public function casesGenerateReverseInvoiceSuccess()
     {
         $reverseInvoiceResponse = new ReverseInvoiceResponse();
         $reverseInvoiceResponse->buyerAccountUrl = 'http://szamlazz.hu/szamla/test-url';
@@ -563,8 +733,6 @@ class SzamlazzClientTest extends TestCase
         $reverseInvoiceResponse->nettoTotal = -3000;
         $reverseInvoiceResponse->accountNumber = 'E-CHPPR-2019-447';
         $reverseInvoiceResponse->grossTotal = -3810;
-        $reverseInvoiceResponse->errorMessage = 'test errror message';
-        $reverseInvoiceResponse->errorCode = 42;
         $reverseInvoiceResponse->pdfData = 'dGVzdA==';
 
         return [
@@ -631,8 +799,6 @@ class SzamlazzClientTest extends TestCase
                     'szlahu_nettovegosszeg' => [-3000],
                     'szlahu_szamlaszam' => ['E-CHPPR-2019-447'],
                     'szlahu_bruttovegosszeg' => [-3810],
-                    'szlahu_error' => ['test errror message'],
-                    'szlahu_error_code' => [42],
                 ],
                 'dGVzdA==',
             ]
@@ -640,9 +806,9 @@ class SzamlazzClientTest extends TestCase
     }
 
     /**
-     * @dataProvider casesGenerateReverseInvoice
+     * @dataProvider casesGenerateReverseInvoiceSuccess
      */
-    public function testGenerateReverseInvoice(
+    public function testGenerateReverseInvoiceSuccess(
         ReverseInvoiceResponse $expectedReverseInvoiceResponse,
         string $expectedRequestBody,
         GenerateReverseInvoice $inputData,
@@ -687,5 +853,93 @@ class SzamlazzClientTest extends TestCase
         );
 
         static::assertContains($expectedRequestBody, $request->getBody()->getContents());
+    }
+
+    public function casesGenerateReverseInvoiceFailed()
+    {
+        return [
+            'wrong header' => [
+                new Exception('Invalid response content type', 53),
+                GenerateReverseInvoice::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                        'eInvoice' => true,
+                        'invoiceDownload' => true,
+                    ],
+                    'header' => [
+                        'accountNumber' => 'E-CHPPR-2019-446',
+                    ],
+                    'seller' => [
+                        'emailReplyto' => 'email@email.com',
+                        'emailSubject' => 'reverse invoice',
+                        'emailText' => 'test txt',
+                    ],
+                    'buyer' => [
+                        'email' => 'email@emailtest.com',
+                    ],
+                ]),
+                [
+                    'Content-Type' => 'application/json'
+                ],
+                '',
+            ],
+            'response with error code' => [
+                new Exception('Wrong account number', 42),
+                GenerateReverseInvoice::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                        'eInvoice' => true,
+                        'invoiceDownload' => true,
+                    ],
+                    'header' => [
+                        'accountNumber' => 'E-CHPPR-2019-446',
+                    ],
+                    'seller' => [
+                        'emailReplyto' => 'email@email.com',
+                        'emailSubject' => 'reverse invoice',
+                        'emailText' => 'test txt',
+                    ],
+                    'buyer' => [
+                        'email' => 'email@emailtest.com',
+                    ],
+                ]),
+                [
+                    'Content-Type' => 'text/html;charset=UTF-8',
+                    'szlahu_error' => ['Wrong account number'],
+                    'szlahu_error_code' => [42],
+                ],
+                '',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesGenerateReverseInvoiceFailed
+     */
+    public function testGenerateReverseInvoiceFailed(
+        Exception $expectedException,
+        GenerateReverseInvoice $generateReverseInvoice,
+        array $responseHeader,
+        string $responseBody
+    ) {
+        $container = [];
+        $history = Middleware::history($container);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                $responseHeader,
+                $responseBody
+            )
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+        $client = new Client([
+            'handler' => $handlerStack,
+        ]);
+
+        $logger = new NullLogger();
+
+        static::expectExceptionObject($expectedException);
+        (new SzamlazzClient($client, $logger))->generateReverseInvoice($generateReverseInvoice);
     }
 }
