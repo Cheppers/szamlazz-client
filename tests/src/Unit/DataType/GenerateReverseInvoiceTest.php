@@ -2,7 +2,7 @@
 
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType;
 
-use Cheppers\SzamlazzClient\DataType\Buyer;
+use Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase;
 use Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice;
 use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Seller;
@@ -18,7 +18,7 @@ class GenerateReverseInvoiceTest extends TestCase
         $settings = new ReverseInvoiceSettings();
         $header = new ReverseInvoiceHeader();
         $seller = new Seller();
-        $buyer = new Buyer();
+        $buyer = new BuyerBase();
         $settings->apiKey = 'myApiKey';
         $settings->eInvoice = true;
         $settings->keychainPassword = 'myPassword';

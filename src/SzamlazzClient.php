@@ -86,9 +86,7 @@ class SzamlazzClient implements SzamlazzClientInterface
 
         $docResponse = new DOMDocument();
 
-        if ($docResponse->loadXML($response->getBody()->getContents()) === false) {
-            throw  new Exception('Response XML cannot be loaded', 57);
-        }
+        $docResponse->loadXML($response->getBody()->getContents());
 
         $errorsSuccess = Utils::validateTaxpayerSuccessResponse($docResponse);
         if ($errorsSuccess) {

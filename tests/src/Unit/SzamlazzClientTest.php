@@ -6,10 +6,13 @@ namespace Cheppers\SzamlazzClient\Tests\Unit;
 
 use Cheppers\SzamlazzClient\DataType\Address;
 use Cheppers\SzamlazzClient\DataType\GenerateInvoice;
+use Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice;
 use Cheppers\SzamlazzClient\DataType\QueryTaxpayer;
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
+use Cheppers\SzamlazzClient\DataType\Response\ReverseInvoiceResponse;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\SzamlazzClient;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -26,7 +29,7 @@ use Psr\Log\NullLogger;
 class SzamlazzClientTest extends TestCase
 {
 
-    public function casesGetTaxPayer()
+    public function casesGetTaxPayerSuccess()
     {
         $taxpayerBasic = new TaxPayerResponse();
         $taxpayerBasic->requestId = '170_k8knfskxnjdn24p97errf7';
@@ -141,9 +144,9 @@ class SzamlazzClientTest extends TestCase
     }
 
     /**
-     * @dataProvider casesGetTaxPayer
+     * @dataProvider casesGetTaxPayerSuccess
      */
-    public function testGetTaxPayer(
+    public function testGetTaxPayerSuccess(
         ?TaxPayerResponse $expectedTaxPayer,
         string $expectedRequestBody,
         string $responseBody,
@@ -169,7 +172,7 @@ class SzamlazzClientTest extends TestCase
 
         static::assertEquals($expectedTaxPayer, $actual);
 
-        /** @var \GuzzleHttp\Psr7\Request $request */
+        /** @var Request $request */
         $request = $container[0]['request'];
         static::assertEquals(1, count($container));
         static::assertEquals('POST', $request->getMethod());
@@ -187,6 +190,100 @@ class SzamlazzClientTest extends TestCase
         );
 
         static::assertContains($expectedRequestBody, $request->getBody()->getContents());
+    }
+
+    public function casesGetTaxPayerFailed()
+    {
+        return [
+            'wrong header' => [
+                new Exception('Invalid response content type', 53),
+                QueryTaxpayer::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                    ],
+                    'taxpayerId' => 'my-tax-payer-2',
+                ]),
+                [
+                    'Content-Type' => 'application/pdf'
+                ],
+                '',
+            ],
+            'invalid response' => [
+                new Exception('Invalid response', 57),
+                QueryTaxpayer::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                    ],
+                    'taxpayerId' => 'my-tax-payer-2',
+                ]),
+                [
+                    'Content-Type' => 'application/octet-stream'
+                ],
+                '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><wrongTagName/>',
+            ],
+            'response with error code' => [
+                new Exception('Wrong taxpayer ID', 42),
+                QueryTaxpayer::__set_state([
+                    'settings' => [
+                        'apiKey' => 'my-api-key',
+                    ],
+                    'taxpayerId' => 'my-tax-payer-2',
+                ]),
+                [
+                    'Content-Type' => 'application/octet-stream'
+                ],
+                implode(PHP_EOL, [
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+                    implode(' ', [
+                        '<QueryTaxpayerResponse',
+                        'xmlns="http://schemas.nav.gov.hu/OSA/1.0/api"',
+                        'xmlns:ns2="http://schemas.nav.gov.hu/OSA/1.0/data">',
+                    ]),
+                    '    <header>',
+                    '        <requestId>143487_dryvs4cmt8jarj4gikcmt8</requestId>',
+                    '        <timestamp>2019-08-01T12:04:45.784Z</timestamp>',
+                    '        <requestVersion>1.1</requestVersion>',
+                    '    </header>',
+                    '    <result>',
+                    '        <funcCode>ERROR</funcCode>',
+                    '        <errorCode>42</errorCode>',
+                    '        <message>Wrong taxpayer ID</message>',
+                    '    </result>',
+                    '    <taxpayerValidity>false</taxpayerValidity>',
+                    '</QueryTaxpayerResponse>',
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesGetTaxPayerFailed
+     */
+    public function testGetTaxPayerFailed(
+        Exception $expectedException,
+        QueryTaxpayer $queryTaxpayer,
+        array $responseHeader,
+        string $responseBody
+    ) {
+        $container = [];
+        $history = Middleware::history($container);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                $responseHeader,
+                $responseBody
+            )
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+        $client = new Client([
+            'handler' => $handlerStack,
+        ]);
+
+        $logger = new NullLogger();
+
+        static::expectExceptionObject($expectedException);
+        (new SzamlazzClient($client, $logger))->getTaxpayer($queryTaxpayer);
     }
 
     public function casesGenerateInvoice()
@@ -438,7 +535,141 @@ class SzamlazzClientTest extends TestCase
 
         static::assertEquals($expectedInvoiceResponse, $actual);
 
-        /** @var \GuzzleHttp\Psr7\Request $request */
+        /** @var Request $request */
+        $request = $container[0]['request'];
+        static::assertEquals(1, count($container));
+        static::assertEquals('POST', $request->getMethod());
+        static::assertStringStartsWith(
+            'multipart/form-data; boundary=',
+            $request->getHeader('Content-type')[0]
+        );
+        static::assertEquals(
+            ['www.szamlazz.hu'],
+            $request->getHeader('Host')
+        );
+        static::assertEquals(
+            'https://www.szamlazz.hu/szamla/',
+            (string) $request->getUri()
+        );
+
+        static::assertContains($expectedRequestBody, $request->getBody()->getContents());
+    }
+
+    public function casesGenerateReverseInvoice()
+    {
+        $reverseInvoiceResponse = new ReverseInvoiceResponse();
+        $reverseInvoiceResponse->buyerAccountUrl = 'http://szamlazz.hu/szamla/test-url';
+        $reverseInvoiceResponse->debit = -3810;
+        $reverseInvoiceResponse->nettoTotal = -3000;
+        $reverseInvoiceResponse->accountNumber = 'E-CHPPR-2019-447';
+        $reverseInvoiceResponse->grossTotal = -3810;
+        $reverseInvoiceResponse->errorMessage = 'test errror message';
+        $reverseInvoiceResponse->errorCode = 42;
+        $reverseInvoiceResponse->pdfData = 'dGVzdA==';
+
+        return [
+            'basic' => [
+                $reverseInvoiceResponse,
+                implode('', [
+                    implode(' ', [
+                        '<xmlszamlast',
+                        'xmlns="http://www.szamlazz.hu/xmlszamlast"',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+                        'xsi:schemaLocation="http://www.szamlazz.hu/xmlszamlast',
+                        'http://www.szamlazz.hu/szamla/docs/xsds/agentst/xmlszamlast.xsd">',
+                    ]),
+                    '<beallitasok>',
+                    '<szamlaagentkulcs>my-test-api-key</szamlaagentkulcs>',
+                    '<eszamla>1</eszamla>',
+                    '<kulcstartojelszo>password</kulcstartojelszo>',
+                    '<szamlaLetoltes>1</szamlaLetoltes>',
+                    '<szamlaLetoltesPld>1</szamlaLetoltesPld>',
+                    '</beallitasok>',
+                    '<fejlec>',
+                    '<szamlaszam>123456789</szamlaszam>',
+                    '<keltDatum>2019-08-03</keltDatum>',
+                    '<teljesitesDatum>2019-08-03</teljesitesDatum>',
+                    '<tipus>test-type</tipus>',
+                    '</fejlec>',
+                    '<elado>',
+                    '<emailReplyto>example@example.com</emailReplyto>',
+                    '<emailTargy>test subject</emailTargy>',
+                    '<emailSzoveg>test email body</emailSzoveg>',
+                    '</elado>',
+                    '<vevo>',
+                    '<email>buyer@test.com</email>',
+                    '</vevo>',
+                    '</xmlszamlast>',
+                ]),
+                GenerateReverseInvoice::__set_state([
+                    'settings' => [
+                        'apiKey'               => 'my-test-api-key',
+                        'eInvoice'             => true,
+                        'keychainPassword'     => 'password',
+                        'invoiceDownload'      => true,
+                        'invoiceDownloadCount' => 1,
+                    ],
+                    'header' => [
+                        'accountNumber'     => '123456789',
+                        'issueDate'         => '2019-08-03',
+                        'fulfillmentDate'   => '2019-08-03',
+                        'type'              => 'test-type',
+                    ],
+                    'seller' => [
+                        'emailReplyTo' => 'example@example.com',
+                        'emailSubject' => 'test subject',
+                        'emailBody'    => 'test email body',
+                    ],
+                    'buyer' => [
+                        'email' => 'buyer@test.com',
+                    ],
+                ]),
+                [
+                    'Content-Type' => 'application/pdf',
+                    'szlahu_kintlevoseg' => [-3810],
+                    'szlahu_vevoifiokurl' => ['http://szamlazz.hu/szamla/test-url'],
+                    'szlahu_nettovegosszeg' => [-3000],
+                    'szlahu_szamlaszam' => ['E-CHPPR-2019-447'],
+                    'szlahu_bruttovegosszeg' => [-3810],
+                    'szlahu_error' => ['test errror message'],
+                    'szlahu_error_code' => [42],
+                ],
+                'dGVzdA==',
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider casesGenerateReverseInvoice
+     */
+    public function testGenerateReverseInvoice(
+        ReverseInvoiceResponse $expectedReverseInvoiceResponse,
+        string $expectedRequestBody,
+        GenerateReverseInvoice $inputData,
+        array $responseHeader,
+        string $responseBody
+    ) {
+        $container = [];
+        $history = Middleware::history($container);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                $responseHeader,
+                $responseBody
+            )
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+        $client = new Client([
+            'handler' => $handlerStack,
+        ]);
+
+        $logger = new NullLogger();
+        $actual = (new SzamlazzClient($client, $logger))->generateReverseInvoice($inputData);
+
+        static::assertEquals($expectedReverseInvoiceResponse, $actual);
+
+        /** @var Request $request */
         $request = $container[0]['request'];
         static::assertEquals(1, count($container));
         static::assertEquals('POST', $request->getMethod());

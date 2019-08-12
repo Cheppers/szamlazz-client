@@ -24,6 +24,8 @@ class Seller extends Base
         'signerName'        => 'alairoNeve',
     ];
 
+    protected $requiredFields = [];
+
     /**
      * @var string
      */
@@ -56,6 +58,12 @@ class Seller extends Base
 
     public function isEmpty(): bool
     {
-        return $this->bankAccountNumber === null;
+        foreach ($this->requiredFields as $field) {
+            if (!$this->{$field}) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

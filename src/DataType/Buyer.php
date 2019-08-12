@@ -39,6 +39,11 @@ class Buyer extends Base
     ];
 
     /**
+     * @var string
+     */
+    public $name;
+
+    /**
      * {@inheritdoc}
      */
     protected $requiredFields = [
@@ -47,11 +52,6 @@ class Buyer extends Base
         'city',
         'address',
     ];
-
-    /**
-     * @var string
-     */
-    public $name;
 
     /**
      * @var string

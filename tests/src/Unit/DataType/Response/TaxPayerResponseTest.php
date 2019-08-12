@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class TaxPayerResponseTest extends TestCase
 {
 
-    public function casesSetState(): array
+    public function casesSetStateSuccess(): array
     {
         $address = new Address();
         $address->countryCode = 'HU';
@@ -81,13 +81,25 @@ class TaxPayerResponseTest extends TestCase
                     '</QueryTaxpayerResponse>'
                 ])
             ],
+            'not xml element' => [
+                [
+                    'taxpayerName' => null,
+                ],
+                implode(PHP_EOL, [
+                    '<?xml version="1.0" encoding="UTF-8"?>',
+                    '<QueryTaxpayerResponse>',
+                        '    <header>',
+                        '    </header>',
+                    '</QueryTaxpayerResponse>',
+                ]),
+            ],
         ];
     }
 
     /**
-     * @dataProvider casesSetState
+     * @dataProvider casesSetStateSuccess
      */
-    public static function testSetState(array $expected, string $xml)
+    public static function testSetStateSuccess(array $expected, string $xml)
     {
         $doc = new \DOMDocument();
         $doc->loadXML($xml);

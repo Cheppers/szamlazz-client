@@ -2,27 +2,35 @@
 
 declare(strict_types = 1);
 
-namespace Cheppers\SzamlazzClient\DataType\Settings;
+namespace Cheppers\SzamlazzClient\DataType\Buyer;
 
 use Cheppers\SzamlazzClient\DataType\Base;
 
-class SettingsBase extends Base
+class BuyerBase extends Base
 {
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    public $apiKey;
+    protected $complexTypeName = 'vevo';
 
     /**
      * {@inheritdoc}
      */
-    public $complexTypeName = 'beallitasok';
-
     protected static $propertyMapping = [
-        'apiKey' => 'szamlaagentkulcs',
+        'email' => 'email',
     ];
 
-    protected $requiredFields = ['apiKey'];
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'email',
+    ];
+
+    /**
+     * @var string
+     */
+    public $email;
 
     public function isEmpty(): bool
     {
