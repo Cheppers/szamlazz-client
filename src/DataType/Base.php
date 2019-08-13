@@ -51,11 +51,17 @@ abstract class Base
 
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
+
             if (!in_array($internal, $this->requiredFields) && !$value) {
                 continue;
             }
 
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
             $newItem = new \DOMElement($external);
+
             $newItem->nodeValue = $value;
             $element->appendChild($newItem);
         }

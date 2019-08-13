@@ -27,7 +27,7 @@ class SettingsBase extends Base
     public function isEmpty(): bool
     {
         foreach ($this->requiredFields as $field) {
-            if (!$this->{$field}) {
+            if (!isset($this->{$field})) {
                 return true;
             }
         }

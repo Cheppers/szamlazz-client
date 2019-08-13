@@ -1,22 +1,24 @@
 <?php
 
-namespace Cheppers\SzamlazzClient\Tests\Unit\DataType;
+namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Settings;
 
-use Cheppers\SzamlazzClient\DataType\Settings;
+use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
+use Cheppers\SzamlazzClient\DataType\Settings\SettingsBase;
+use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\Settings<extended>
+ * @covers \Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings<extended>
  */
-class SettingsTest extends BaseTestBase
+class InvoiceSettingsTest extends BaseTestBase
 {
     public function casesBuildXmlData()
     {
         $values =  [
             'apiKey'               => 'test_api_key',
-            'eInvoice'             => 'true',
+            'eInvoice'             => true,
             'keychainPassword'     => 'key_chain_passw',
-            'invoiceDownload'      => 'true',
+            'invoiceDownload'      => true,
             'invoiceDownloadCount' => 42,
             'responseVersion'      => 5,
             'aggregator'           => 'test_aggregator',
@@ -27,8 +29,8 @@ class SettingsTest extends BaseTestBase
             '<xmlszamla></xmlszamla>',
         ]);
 
-        $settingsBasic = Settings::__set_state($values);
-        $settingsEmpty = Settings::__set_state([]);
+        $settingsBasic = InvoiceSettings::__set_state($values);
+        $settingsEmpty = InvoiceSettings::__set_state([]);
         $basicDoc = new \DOMDocument();
         $basicDoc->loadXML($xml);
 

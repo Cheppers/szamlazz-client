@@ -83,4 +83,68 @@ class GenerateReverseInvoiceTest extends TestCase
 
         static::assertEquals($expected, $instance);
     }
+
+    public function casesBuildXmlStringSuccess()
+    {
+        $generateReverseInvoice = new GenerateReverseInvoice();
+        $settings = new ReverseInvoiceSettings();
+        $settings->apiKey = 'my-api-key';
+        $settings->eInvoice = false;
+        $settings->invoiceDownload = true;
+        $header = new ReverseInvoiceHeader();
+        $header->accountNumber = 'E-TST';
+        $seller = new Seller();
+        $seller->emailReplyTo = 'elado@example.com';
+        $seller->emailSubject = 'subject';
+        $seller->emailBody = 'Lorem ipsum';
+        $buyer = new BuyerBase();
+        $buyer->email = 'buyer@example.com';
+
+        $generateReverseInvoice->settings = $settings;
+        $generateReverseInvoice->header = $header;
+        $generateReverseInvoice->seller = $seller;
+        $generateReverseInvoice->buyer = $buyer;
+
+        return [
+            'basic' => [
+                implode('', [
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+                    implode(' ', [
+                        '<xmlszamlast xmlns="http://www.szamlazz.hu/xmlszamlast"',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+                        'xsi:schemaLocation="http://www.szamlazz.hu/xmlszamlast',
+                        'http://www.szamlazz.hu/szamla/docs/xsds/agentst/xmlszamlast.xsd">',
+                    ]),
+                    '<beallitasok>',
+                    '<szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
+                    '<eszamla>false</eszamla>',
+                    '<szamlaLetoltes>true</szamlaLetoltes>',
+                    '</beallitasok>',
+                    '<fejlec>',
+                    '<szamlaszam>E-TST</szamlaszam>',
+                    '</fejlec>',
+                    '<elado>',
+                    '<emailReplyto>elado@example.com</emailReplyto>',
+                    '<emailTargy>subject</emailTargy>',
+                    '<emailSzoveg>Lorem ipsum</emailSzoveg>',
+                    '</elado>',
+                    '<vevo>',
+                    '<email>buyer@example.com</email>',
+                    '</vevo>',
+                    "</xmlszamlast>\n",
+                ]),
+                $generateReverseInvoice,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesBuildXmlStringSuccess
+     */
+    public function testBuildXmlStringSuccess(string $expected, GenerateReverseInvoice $generateReverseInvoice)
+    {
+        $actual = $generateReverseInvoice->buildXmlString();
+
+        static::assertSame($expected, $actual);
+    }
 }

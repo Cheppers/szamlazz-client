@@ -9,6 +9,11 @@ use Cheppers\SzamlazzClient\DataType\Base;
 class BuyerBase extends Base
 {
     /**
+     * @var string
+     */
+    public $email;
+
+    /**
      * {@inheritdoc}
      */
     protected $complexTypeName = 'vevo';
@@ -26,11 +31,6 @@ class BuyerBase extends Base
     protected $requiredFields = [
         'email',
     ];
-
-    /**
-     * @var string
-     */
-    public $email;
 
     public function isEmpty(): bool
     {

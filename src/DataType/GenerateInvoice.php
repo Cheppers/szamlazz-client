@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
+use Cheppers\SzamlazzClient\DataType\Buyer\InvoiceBuyer;
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
@@ -57,7 +58,7 @@ class GenerateInvoice extends RequestBase
     public $header;
 
     /**
-     * @var Buyer
+     * @var InvoiceBuyer
      */
     public $buyer;
 
@@ -98,7 +99,7 @@ class GenerateInvoice extends RequestBase
                     $instance->header = InvoiceHeader::__set_state($value);
                     break;
                 case 'buyer':
-                    $instance->buyer = Buyer::__set_state($value);
+                    $instance->buyer = InvoiceBuyer::__set_state($value);
                     break;
                 case 'buyerLedger':
                     $instance->buyerLedger = BuyerLedger::__set_state($value);
