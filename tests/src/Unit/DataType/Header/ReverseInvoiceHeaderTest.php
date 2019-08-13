@@ -6,6 +6,9 @@ use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader<extended>
+ */
 class ReverseInvoiceHeaderTest extends BaseTestBase
 {
     /**

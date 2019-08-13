@@ -5,6 +5,9 @@ namespace Cheppers\SzamlazzClient\Tests\Unit\DataType;
 use Cheppers\SzamlazzClient\DataType\Settings;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\Settings<extended>
+ */
 class SettingsTest extends BaseTestBase
 {
     public function casesBuildXmlData()

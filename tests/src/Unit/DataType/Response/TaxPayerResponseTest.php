@@ -8,6 +8,9 @@ use Cheppers\SzamlazzClient\DataType\Address;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse
+ */
 class TaxPayerResponseTest extends TestCase
 {
 

@@ -6,6 +6,9 @@ use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader<extended>
+ */
 class InvoiceHeaderTest extends BaseTestBase
 {
     /**

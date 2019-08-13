@@ -7,7 +7,7 @@ use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase
+ * @covers \Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase<extended>
  */
 class BuyerBaseTest extends BaseTestBase
 {

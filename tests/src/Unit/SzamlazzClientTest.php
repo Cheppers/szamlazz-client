@@ -294,7 +294,6 @@ class SzamlazzClientTest extends TestCase
         $invoiceResponse->netPrice = '2000';
         $invoiceResponse->grossAmount = '2540';
         $invoiceResponse->pdfData = 'dGVzdA==';
-        $invoiceResponse->buyerAccountUrl = 'testurl.com';
 
         return [
             'basic' => [
@@ -498,7 +497,6 @@ class SzamlazzClientTest extends TestCase
                     '  <szamlanetto>2000</szamlanetto>',
                     '  <szamlabrutto>2540</szamlabrutto>',
                     '  <kintlevoseg>2540</kintlevoseg>',
-                    '  <vevoifiokurl>testurl.com</vevoifiokurl>',
                     '  <pdf>dGVzdA==</pdf>',
                     '</xmlszamlavalasz>',
                 ])
