@@ -25,4 +25,9 @@ class PPP extends Base
      * @var string
      */
     public $barcodePostfix;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'ppp';
 }

@@ -13,14 +13,6 @@ class BuyerLedger extends Base
     protected $complexTypeName = 'vevoFokonyv';
 
     /**
-     * @return mixed
-     */
-    public function getComplexTypeName()
-    {
-        return $this->complexTypeName;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected static $propertyMapping = [

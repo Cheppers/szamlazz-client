@@ -7,6 +7,9 @@ namespace Cheppers\SzamlazzClient\DataType;
 use Cheppers\SzamlazzClient\DataType\Settings\SettingsBase;
 use Exception;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\QueryTaxpayer<extended>
+ */
 class QueryTaxpayer extends RequestBase
 {
     /**

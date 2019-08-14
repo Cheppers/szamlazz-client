@@ -67,7 +67,7 @@ class Waybill extends Base
      */
     public $mpl;
 
-    protected $requiredFields = [];
+    protected $requiredFields = ['destination'];
 
     public static function __set_state($values)
     {

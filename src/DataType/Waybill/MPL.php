@@ -29,15 +29,10 @@ class MPL extends Base
         'weight',
     ];
 
-    protected $complexTypeName = 'mpl';
-
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getComplexTypeName(): string
-    {
-        return $this->complexTypeName;
-    }
+    protected $complexTypeName = 'mpl';
 
     /**
      * @var string

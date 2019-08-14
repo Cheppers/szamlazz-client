@@ -50,4 +50,9 @@ class Transoflex extends Base
      * @var string
      */
     public $service;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'tof';
 }

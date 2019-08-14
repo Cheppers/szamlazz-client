@@ -15,7 +15,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\GenerateInvoice
+ * @covers \Cheppers\SzamlazzClient\DataType\GenerateInvoice<extended>
  */
 class GenerateInvoiceTest extends TestCase
 {

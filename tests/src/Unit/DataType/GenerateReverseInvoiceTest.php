@@ -7,10 +7,11 @@ use Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice;
 use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Seller;
 use Cheppers\SzamlazzClient\DataType\Settings\ReverseInvoiceSettings;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice
+ * @covers \Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice<extended>
  */
 class GenerateReverseInvoiceTest extends TestCase
 {
@@ -142,11 +143,32 @@ class GenerateReverseInvoiceTest extends TestCase
 
     /**
      * @dataProvider casesBuildXmlStringSuccess
+     * @throws Exception
      */
     public function testBuildXmlStringSuccess(string $expected, GenerateReverseInvoice $generateReverseInvoice)
     {
         $actual = $generateReverseInvoice->buildXmlString();
 
         static::assertSame($expected, $actual);
+    }
+
+    public function casesBuildXmlStringFailed()
+    {
+        return [
+            'empty' => [
+                new Exception('Missing required field'),
+                new GenerateReverseInvoice(),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesBuildXmlStringFailed
+     * @throws Exception
+     */
+    public function testBuildXmlStringFailed(Exception $expected, GenerateReverseInvoice $generateReverseInvoice)
+    {
+        static::expectExceptionObject($expected);
+        $generateReverseInvoice->buildXmlString();
     }
 }

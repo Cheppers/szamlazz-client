@@ -19,14 +19,6 @@ class BuyerBase extends Base
     protected $complexTypeName = 'vevo';
 
     /**
-     * @return mixed
-     */
-    public function getComplexTypeName()
-    {
-        return $this->complexTypeName;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected static $propertyMapping = [

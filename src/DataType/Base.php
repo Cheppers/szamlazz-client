@@ -12,6 +12,11 @@ abstract class Base
      */
     protected $complexTypeName;
 
+    public function getComplexTypeName(): string
+    {
+        return $this->complexTypeName;
+    }
+
     /**
      * @var string[]
      */

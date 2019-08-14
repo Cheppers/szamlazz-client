@@ -49,4 +49,9 @@ class Sprinter extends Base
      * @var string
      */
     public $shippingTime;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'sprinter';
 }
