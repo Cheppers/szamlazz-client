@@ -9,6 +9,7 @@ use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
 use Exception;
+use phpDocumentor\Reflection\Types\This;
 
 class GenerateInvoice extends RequestBase
 {
@@ -44,7 +45,6 @@ class GenerateInvoice extends RequestBase
         'buyer'       => 'vevo',
         'waybill'     => 'fuvarlevel',
         'items'       => 'tetelek',
-        'buyerLedger' => 'vevoFokonyv',
     ];
 
     /**
@@ -61,11 +61,6 @@ class GenerateInvoice extends RequestBase
      * @var InvoiceBuyer
      */
     public $buyer;
-
-    /**
-     * @var BuyerLedger
-     */
-    public $buyerLedger;
 
     /**
      * @var Seller
@@ -100,9 +95,6 @@ class GenerateInvoice extends RequestBase
                     break;
                 case 'buyer':
                     $instance->buyer = InvoiceBuyer::__set_state($value);
-                    break;
-                case 'buyerLedger':
-                    $instance->buyerLedger = BuyerLedger::__set_state($value);
                     break;
                 case 'seller':
                     $instance->seller = Seller::__set_state($value);

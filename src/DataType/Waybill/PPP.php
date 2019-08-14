@@ -8,7 +8,6 @@ use Cheppers\SzamlazzClient\DataType\Base;
 
 class PPP extends Base
 {
-
     /**
      * {@inheritdoc}
      */
@@ -26,9 +25,4 @@ class PPP extends Base
      * @var string
      */
     public $barcodePostfix;
-
-    public function isEmpty(): bool
-    {
-        return $this->barcodePrefix === null;
-    }
 }

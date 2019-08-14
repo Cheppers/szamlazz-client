@@ -56,11 +56,10 @@ class Address extends Base
      */
     public $door;
 
-    public function isEmpty(): bool
-    {
-        return $this->countryCode === null;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = ['countryCode'];
 
     public static function __set_state($root)
     {

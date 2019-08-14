@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
+use DateTime;
+
 class ItemLedger extends Base
 {
 
@@ -40,17 +42,12 @@ class ItemLedger extends Base
     public $vatLedgerNumber;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $payOffDateFrom;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $payOffDateTo;
-
-    public function isEmpty(): bool
-    {
-        return $this->economicEvent === null;
-    }
 }

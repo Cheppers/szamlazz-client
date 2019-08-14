@@ -48,9 +48,4 @@ class ReverseInvoiceHeader extends Base
      * @var string
      */
     public $type;
-
-    public function isEmpty(): bool
-    {
-        return $this->accountNumber === null;
-    }
 }

@@ -49,9 +49,4 @@ class Sprinter extends Base
      * @var string
      */
     public $shippingTime;
-
-    public function isEmpty(): bool
-    {
-        return $this->id === null;
-    }
 }

@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType\Buyer;
 
+use Cheppers\SzamlazzClient\DataType\BuyerLedger;
+
 class InvoiceBuyer extends BuyerBase
 {
     /**
@@ -77,7 +79,7 @@ class InvoiceBuyer extends BuyerBase
     public $postalAddress;
 
     /**
-     * @var \Cheppers\SzamlazzClient\DataType\BuyerLedger
+     * @var BuyerLedger
      */
     public $buyerLedger;
 

@@ -39,7 +39,16 @@ abstract class Base
         return $instance;
     }
 
-    abstract public function isEmpty(): bool;
+    public function isEmpty(): bool
+    {
+        foreach ($this->requiredFields as $field) {
+            if (!isset($this->{$field})) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public function buildXmlData(\DOMDocument $doc): \DOMDocument
     {
@@ -58,6 +67,13 @@ abstract class Base
 
             if (is_bool($value)) {
                 $value = $value ? 'true' : 'false';
+            }
+
+            if (is_object($value)) {
+                $value->buildXmlData($doc);
+                $subElement = $doc->getElementsByTagName($value->getComplexTypeName())->item(0);
+                $element->appendChild($subElement);
+                continue;
             }
 
             $newItem = new \DOMElement($external);

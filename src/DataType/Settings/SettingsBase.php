@@ -23,15 +23,4 @@ class SettingsBase extends Base
     ];
 
     protected $requiredFields = ['apiKey'];
-
-    public function isEmpty(): bool
-    {
-        foreach ($this->requiredFields as $field) {
-            if (!isset($this->{$field})) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

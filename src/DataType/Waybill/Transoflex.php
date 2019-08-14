@@ -50,9 +50,4 @@ class Transoflex extends Base
      * @var string
      */
     public $service;
-
-    public function isEmpty(): bool
-    {
-        return $this->id === null;
-    }
 }

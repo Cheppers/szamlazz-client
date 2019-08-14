@@ -19,6 +19,14 @@ class BuyerBase extends Base
     protected $complexTypeName = 'vevo';
 
     /**
+     * @return mixed
+     */
+    public function getComplexTypeName()
+    {
+        return $this->complexTypeName;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected static $propertyMapping = [
@@ -31,15 +39,4 @@ class BuyerBase extends Base
     protected $requiredFields = [
         'email',
     ];
-
-    public function isEmpty(): bool
-    {
-        foreach ($this->requiredFields as $field) {
-            if (!$this->{$field}) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

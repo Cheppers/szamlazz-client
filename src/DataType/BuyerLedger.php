@@ -10,7 +10,15 @@ class BuyerLedger extends Base
     /**
      * {@inheritdoc}
      */
-    protected $complexTypeName = 'vevoFokonyvTipus';
+    protected $complexTypeName = 'vevoFokonyv';
+
+    /**
+     * @return mixed
+     */
+    public function getComplexTypeName()
+    {
+        return $this->complexTypeName;
+    }
 
     /**
      * {@inheritdoc}
@@ -19,7 +27,7 @@ class BuyerLedger extends Base
         'bookingDate'         => 'konyvelesDatum',
         'buyerId'             => 'vevoAzonosito',
         'buyerLedgerNumber'   => 'vevoFokonyviSzam',
-        'continousCompletion' => 'folyamatosTelj',
+        'continuousCompletion' => 'folyamatosTelj',
     ];
 
     /**
@@ -43,12 +51,7 @@ class BuyerLedger extends Base
     public $continuousCompletion;
 
     /**
-     * @var boolean
+     * {@inheritdoc}
      */
-    public $continuedFulfillment = false;
-
-    public function isEmpty(): bool
-    {
-        return $this->buyerId === null;
-    }
+    protected $requiredFields = [];
 }

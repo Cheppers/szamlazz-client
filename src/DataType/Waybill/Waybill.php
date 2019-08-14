@@ -67,10 +67,7 @@ class Waybill extends Base
      */
     public $mpl;
 
-    public function isEmpty(): bool
-    {
-        return false;
-    }
+    protected $requiredFields = [];
 
     public static function __set_state($values)
     {

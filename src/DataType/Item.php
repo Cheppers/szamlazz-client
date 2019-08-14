@@ -31,20 +31,6 @@ class Item extends Base
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = [
-       'title',
-       'quantity',
-       'quantityUnit',
-       'netUnitPrice',
-       'vat',
-       'netPrice',
-       'vatAmount',
-       'grossAmount',
-    ];
-
-    /**
      * @var string
      */
     public $title;
@@ -104,8 +90,17 @@ class Item extends Base
      */
     public $itemLedger;
 
-    public function isEmpty(): bool
-    {
-        return $this->title === null;
-    }
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'title',
+        'quantity',
+        'quantityUnit',
+        'netUnitPrice',
+        'vat',
+        'netPrice',
+        'vatAmount',
+        'grossAmount',
+    ];
 }

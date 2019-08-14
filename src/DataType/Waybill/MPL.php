@@ -29,6 +29,16 @@ class MPL extends Base
         'weight',
     ];
 
+    protected $complexTypeName = 'mpl';
+
+    /**
+     * @return string
+     */
+    public function getComplexTypeName(): string
+    {
+        return $this->complexTypeName;
+    }
+
     /**
      * @var string
      */
@@ -53,9 +63,4 @@ class MPL extends Base
      * @var double
      */
     public $insuredValue;
-
-    public function isEmpty(): bool
-    {
-        return $this->buyerCode === null;
-    }
 }

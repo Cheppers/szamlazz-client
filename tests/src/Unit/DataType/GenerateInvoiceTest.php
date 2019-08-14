@@ -3,11 +3,15 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Buyer\InvoiceBuyer;
+use Cheppers\SzamlazzClient\DataType\BuyerLedger;
 use Cheppers\SzamlazzClient\DataType\GenerateInvoice;
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Item;
 use Cheppers\SzamlazzClient\DataType\Seller;
 use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
+use Cheppers\SzamlazzClient\DataType\Waybill\MPL;
+use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +26,8 @@ class GenerateInvoiceTest extends TestCase
         $header = new InvoiceHeader();
         $seller = new Seller();
         $buyer = new InvoiceBuyer();
+        $wayBill = new Waybill();
+        $mpl = new MPL();
         $itemOne = new Item();
         $itemTwo = new Item();
         $settings->apiKey = 'myApiKey';
@@ -100,11 +106,22 @@ class GenerateInvoiceTest extends TestCase
         $itemTwo->vatAmount = 270;
         $itemTwo->grossAmount = 1270;
         $itemTwo->comment = 'test item comment';
+        $mpl->buyerCode = 'buyer-code';
+        $mpl->barcode = 'barcode';
+        $mpl->weight = 'weight';
+        $mpl->service = 'service';
+        $mpl->insuredValue = 'insured-value';
+        $wayBill->destination = 'destination';
+        $wayBill->parcel = 'parcel';
+        $wayBill->barcode = 'barcode';
+        $wayBill->comment = 'comment';
+        $wayBill->mpl = $mpl;
         $basicInvoice->settings = $settings;
         $basicInvoice->header = $header;
         $basicInvoice->seller = $seller;
         $basicInvoice->buyer = $buyer;
         $basicInvoice->items = [$itemOne, $itemTwo];
+        $basicInvoice->waybill = $wayBill;
 
         return [
             'empty' => [
@@ -204,7 +221,23 @@ class GenerateInvoiceTest extends TestCase
                             'grossAmount'     => 1270,
                             'comment'         => 'test item comment',
                         ],
-                    ]
+                    ],
+                    'waybill' => [
+                        'destination' => 'destination',
+                        'parcel'      => 'parcel',
+                        'barcode'     => 'barcode',
+                        'comment'     => 'comment',
+                        'mpl'         => [
+                            'buyerCode'    => 'buyer-code',
+                            'barcode'      => 'barcode',
+                            'weight'       => 'weight',
+                            'service'      => 'service',
+                            'insuredValue' => 'insured-value',
+                        ],
+                    ],
+                    'badProperty' => [
+                        'key' => 'value',
+                    ],
                 ],
             ]
         ];
@@ -227,6 +260,7 @@ class GenerateInvoiceTest extends TestCase
         $header = new InvoiceHeader();
         $seller = new Seller();
         $buyer = new InvoiceBuyer();
+        $buyerLedger = new BuyerLedger();
         $itemOne = new Item();
         $itemTwo = new Item();
         $settings->apiKey = 'myApiKey';
@@ -264,6 +298,10 @@ class GenerateInvoiceTest extends TestCase
         $seller->emailSubject = 'subject';
         $seller->emailBody = 'email body';
         $seller->signerName = 'Signer Name';
+        $buyerLedger->bookingDate = '2019-01-04';
+        $buyerLedger->buyerId = 'identity';
+        $buyerLedger->buyerLedgerNumber = 'buyer-ledger-number';
+        $buyerLedger->continuousCompletion = false;
         $buyer->id = 'Foo';
         $buyer->name = 'Bar';
         $buyer->email = 'test@test.com';
@@ -276,6 +314,7 @@ class GenerateInvoiceTest extends TestCase
         $buyer->postalCity = 'Postal city';
         $buyer->postalAddress = 'Postal address';
         $buyer->postalName = 'Postal name';
+        $buyer->buyerLedger = $buyerLedger;
         $buyer->taxPayer = 112233;
         $buyer->taxNumberEU = '87654321';
         $buyer->taxNumber = '12345678';
@@ -379,6 +418,12 @@ class GenerateInvoiceTest extends TestCase
                     '<postazasiIrsz>1123</postazasiIrsz>',
                     '<postazasiTelepules>Postal city</postazasiTelepules>',
                     '<postazasiCim>Postal address</postazasiCim>',
+                    '<vevoFokonyv>',
+                    '<konyvelesDatum>2019-01-04</konyvelesDatum>',
+                    '<vevoAzonosito>identity</vevoAzonosito>',
+                    '<vevoFokonyviSzam>buyer-ledger-number</vevoFokonyviSzam>',
+                    '<folyamatosTelj>false</folyamatosTelj>',
+                    '</vevoFokonyv>',
                     '<azonosito>Foo</azonosito>',
                     '<alairoNeve>Signatory Name</alairoNeve>',
                     '<telefonszam>phone number</telefonszam>',
@@ -427,5 +472,24 @@ class GenerateInvoiceTest extends TestCase
         $actual = $generateInvoice->buildXmlString();
 
         static::assertSame($expected, $actual);
+    }
+
+    public function casesBuildXmlStringFailed()
+    {
+        return [
+            'empty' => [
+                new Exception('Missing required field'),
+                new GenerateInvoice(),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesBuildXmlStringFailed
+     */
+    public function testBuildXmlStringFailed(\Exception $expected, GenerateInvoice $generateInvoice)
+    {
+        static::expectExceptionObject($expected);
+        $generateInvoice->buildXmlString();
     }
 }

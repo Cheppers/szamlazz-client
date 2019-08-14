@@ -55,15 +55,4 @@ class Seller extends Base
      * @var string
      */
     public $signerName;
-
-    public function isEmpty(): bool
-    {
-        foreach ($this->requiredFields as $field) {
-            if (!$this->{$field}) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
