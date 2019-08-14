@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cheppers\SzamlazzClient\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Base;
+use DateTime;
 
 class InvoiceHeader extends Base
 {
@@ -55,17 +56,17 @@ class InvoiceHeader extends Base
     ];
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $issueDate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $fulfillmentDate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $paymentDue;
 

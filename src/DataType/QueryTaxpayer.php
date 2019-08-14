@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Settings\SettingsBase;
+use Exception;
 
 class QueryTaxpayer extends RequestBase
 {
@@ -75,22 +76,17 @@ class QueryTaxpayer extends RequestBase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildXmlString(): string
     {
         if ($this->isEmpty()) {
-            throw new \Exception('Missing required field');
+            throw new Exception('Missing required field');
         }
 
         $doc = $this->getXmlBase();
 
         foreach (static::$propertyMapping as $internal => $external) {
-            $value =  $this->{$internal};
-            if (!in_array($internal, $this->requiredFields) && !$value) {
-                continue;
-            }
-
             if ($internal === 'taxpayerId') {
                 $element = $doc->createElement('torzsszam', (string) $this->taxpayerId);
                 $doc->documentElement->appendChild($element);

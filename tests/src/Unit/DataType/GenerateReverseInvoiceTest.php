@@ -9,9 +9,11 @@ use Cheppers\SzamlazzClient\DataType\Seller;
 use Cheppers\SzamlazzClient\DataType\Settings\ReverseInvoiceSettings;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Cheppers\SzamlazzClient\DataType\GenerateReverseInvoice
+ */
 class GenerateReverseInvoiceTest extends TestCase
 {
-
     public function casesSetState()
     {
         $basicReverseInvoice = new GenerateReverseInvoice();
