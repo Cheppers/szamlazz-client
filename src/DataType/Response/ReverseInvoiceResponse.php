@@ -9,45 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 class ReverseInvoiceResponse
 {
     /**
-     * @var int
+     * @var string[]
      */
-    public $debit;
-
-    /**
-     * @var string
-     */
-    public $buyerAccountUrl;
-
-    /**
-     * @var int
-     */
-    public $nettoTotal;
-
-    /**
-     * @var string
-     */
-    public $accountNumber;
-
-    /**
-     * @var int
-     */
-    public $grossTotal;
-
-    /**
-     * @var string
-     */
-    public $errorMessage;
-
-    /**
-     * @var int
-     */
-    public $errorCode;
-
-    /**
-     * @var string
-     */
-    public $pdfData;
-
     protected static $propertyMapping = [
         'debit'           => 'szlahu_kintlevoseg',
         'buyerAccountUrl' => 'szlahu_vevoifiokurl',
@@ -102,4 +65,44 @@ class ReverseInvoiceResponse
 
         return $instance;
     }
+
+    /**
+     * @var int
+     */
+    public $debit;
+
+    /**
+     * @var string
+     */
+    public $buyerAccountUrl;
+
+    /**
+     * @var int
+     */
+    public $nettoTotal;
+
+    /**
+     * @var string
+     */
+    public $accountNumber;
+
+    /**
+     * @var int
+     */
+    public $grossTotal;
+
+    /**
+     * @var string
+     */
+    public $errorMessage;
+
+    /**
+     * @var int
+     */
+    public $errorCode;
+
+    /**
+     * @var string
+     */
+    public $pdfData;
 }

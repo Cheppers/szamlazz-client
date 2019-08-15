@@ -8,7 +8,7 @@ use Cheppers\SzamlazzClient\DataType\Waybill\Sprinter;
 use Cheppers\SzamlazzClient\DataType\Waybill\Transoflex;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Waybill\Waybill<extended>
@@ -63,7 +63,7 @@ class WaybillTest extends BaseTestBase
 
         $emptyWaybill = Waybill::__set_state([]);
         $basicWaybill = Waybill::__set_state($values);
-        $basicXml = new \DOMDocument();
+        $basicXml = new DOMDocument();
         $basicXml->loadXML($xml);
 
         return [
@@ -73,7 +73,7 @@ class WaybillTest extends BaseTestBase
                     '',
                 ]),
                 $emptyWaybill,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

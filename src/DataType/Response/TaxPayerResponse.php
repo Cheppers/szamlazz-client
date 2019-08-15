@@ -5,62 +5,16 @@ declare(strict_types=1);
 namespace Cheppers\SzamlazzClient\DataType\Response;
 
 use Cheppers\SzamlazzClient\DataType\Address;
-use Cheppers\SzamlazzClient\DataType\Base;
+use DOMElement;
 
 class TaxPayerResponse
 {
-
-    /**
-     * @var string
-     */
-    public $requestId;
-
-    /**
-     * @var string
-     */
-    public $timestamp;
-
-    /**
-     * @var string
-     */
-    public $requestVersion;
-
-    /**
-     * @var string
-     */
-    public $funcCode;
-
-    /**
-     * @var string
-     */
-    public $errorCode;
-
-    /**
-     * @var string
-     */
-    public $message;
-
-    /**
-     * @var bool
-     */
-    public $taxpayerValidity;
-
-    /**
-     * @var string
-     */
-    public $taxpayerName;
-
-    /**
-     * @var \Cheppers\SzamlazzClient\DataType\Address
-     */
-    public $address;
-
     public static function __set_state($root)
     {
         $instance = new static();
 
-        /** @var \DOMElement $element */
-        /** @var \DOMElement $subElement */
+        /** @var DOMElement $element */
+        /** @var DOMElement $subElement */
         foreach ($root->childNodes as $element) {
             if ($element->nodeType !== XML_ELEMENT_NODE) {
                 continue;
@@ -136,4 +90,49 @@ class TaxPayerResponse
 
         return $instance;
     }
+
+    /**
+     * @var string
+     */
+    public $requestId;
+
+    /**
+     * @var string
+     */
+    public $timestamp;
+
+    /**
+     * @var string
+     */
+    public $requestVersion;
+
+    /**
+     * @var string
+     */
+    public $funcCode;
+
+    /**
+     * @var string
+     */
+    public $errorCode;
+
+    /**
+     * @var string
+     */
+    public $message;
+
+    /**
+     * @var bool
+     */
+    public $taxpayerValidity;
+
+    /**
+     * @var string
+     */
+    public $taxpayerName;
+
+    /**
+     * @var Address
+     */
+    public $address;
 }

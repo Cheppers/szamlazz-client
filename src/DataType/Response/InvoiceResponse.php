@@ -1,65 +1,32 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType\Response;
 
-use Cheppers\SzamlazzClient\DataType\Base;
+use DOMElement;
 
 class InvoiceResponse
 {
-
+    /**
+     * @var string[]
+     */
     protected static $propertyMapping = [
-        'success'         => 'sikeres',
-        'errorCode'       => 'hibakod',
-        'errorMessage'    => 'hibauzenet',
-        'invoiceNumber'   => 'szamlaszam',
-        'netPrice'        => 'szamlanetto',
-        'grossAmount'     => 'szamlabrutto',
-        'pdfData'         => 'pdf',
+        'success'       => 'sikeres',
+        'errorCode'     => 'hibakod',
+        'errorMessage'  => 'hibauzenet',
+        'invoiceNumber' => 'szamlaszam',
+        'netPrice'      => 'szamlanetto',
+        'grossAmount'   => 'szamlabrutto',
+        'pdfData'       => 'pdf',
     ];
 
-    /**
-     * @var bool
-     */
-    public $success;
-
-    /**
-     * @var string
-     */
-    public $errorCode;
-
-    /**
-     * @var string
-     */
-    public $errorMessage;
-
-    /**
-     * @var string
-     */
-    public $invoiceNumber;
-
-    /**
-     * @var int
-     */
-    public $netPrice;
-
-    /**
-     * @var int
-     */
-    public $grossAmount;
-
-    /**
-     * @var string
-     */
-    public $pdfData;
-
-    public static function __set_state(\DOMElement $root): InvoiceResponse
+    public static function __set_state(DOMElement $root): InvoiceResponse
     {
         $instance = new static();
 
-        /** @var \DOMElement $element */
-        /** @var \DOMElement $subElement */
+        /** @var DOMElement $element */
+        /** @var DOMElement $subElement */
         foreach ($root->childNodes as $element) {
             if ($element->nodeType !== XML_ELEMENT_NODE) {
                 continue;
@@ -98,4 +65,39 @@ class InvoiceResponse
 
         return $instance;
     }
+
+    /**
+     * @var bool
+     */
+    public $success;
+
+    /**
+     * @var string
+     */
+    public $errorCode;
+
+    /**
+     * @var string
+     */
+    public $errorMessage;
+
+    /**
+     * @var string
+     */
+    public $invoiceNumber;
+
+    /**
+     * @var int
+     */
+    public $netPrice;
+
+    /**
+     * @var int
+     */
+    public $grossAmount;
+
+    /**
+     * @var string
+     */
+    public $pdfData;
 }

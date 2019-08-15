@@ -6,6 +6,7 @@ namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Response;
 
 use Cheppers\SzamlazzClient\DataType\Address;
 use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
+use DOMDocument;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -104,7 +105,7 @@ class TaxPayerResponseTest extends TestCase
      */
     public static function testSetStateSuccess(array $expected, string $xml)
     {
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->loadXML($xml);
 
         /** @var \DOMElement $root */

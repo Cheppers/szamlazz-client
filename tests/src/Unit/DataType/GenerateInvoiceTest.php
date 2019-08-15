@@ -466,6 +466,7 @@ class GenerateInvoiceTest extends TestCase
 
     /**
      * @dataProvider casesBuildXmlStringSuccess
+     * @throws \Exception
      */
     public function testBuildXmlStringSuccess(string $expected, GenerateInvoice $generateInvoice)
     {
@@ -486,6 +487,7 @@ class GenerateInvoiceTest extends TestCase
 
     /**
      * @dataProvider casesBuildXmlStringFailed
+     * @throws \Exception
      */
     public function testBuildXmlStringFailed(\Exception $expected, GenerateInvoice $generateInvoice)
     {

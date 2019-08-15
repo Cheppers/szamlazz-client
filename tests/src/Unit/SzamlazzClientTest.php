@@ -14,7 +14,6 @@ use Cheppers\SzamlazzClient\DataType\Response\TaxPayerResponse;
 use Cheppers\SzamlazzClient\SzamlazzClient;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
@@ -145,6 +144,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGetTaxPayerSuccess
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGetTaxPayerSuccess(
         ?TaxPayerResponse $expectedTaxPayer,
@@ -258,6 +258,8 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGetTaxPayerFailed
+     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGetTaxPayerFailed(
         Exception $expectedException,
@@ -507,6 +509,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGenerateInvoiceSuccess
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGenerateInvoiceSuccess(
         InvoiceResponse $expectedInvoiceResponse,
@@ -696,6 +699,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGenerateInvoiceFailed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGenerateInvoiceFailed(
         Exception $expectedException,
@@ -806,6 +810,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGenerateReverseInvoiceSuccess
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGenerateReverseInvoiceSuccess(
         ReverseInvoiceResponse $expectedReverseInvoiceResponse,
@@ -914,6 +919,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGenerateReverseInvoiceFailed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGenerateReverseInvoiceFailed(
         Exception $expectedException,

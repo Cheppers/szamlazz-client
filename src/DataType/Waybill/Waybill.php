@@ -11,11 +11,6 @@ class Waybill extends Base
     /**
      * {@inheritdoc}
      */
-    protected $complexTypeName = 'fuvarlevel';
-
-    /**
-     * {@inheritdoc}
-     */
     protected static $propertyMapping = [
         'destination' => 'uticel',
         'parcel'      => 'futarSzolgalat',
@@ -26,48 +21,6 @@ class Waybill extends Base
         'sprinter'    => 'sprinter',
         'mpl'         => 'mpl',
     ];
-
-    /**
-     * @var string
-     */
-    public $destination;
-
-    /**
-     * @var string
-     */
-    public $parcel;
-
-    /**
-     * @var string
-     */
-    public $barcode;
-
-    /**
-     * @var string
-     */
-    public $comment;
-
-    /**
-     * @var Transoflex
-     */
-    public $tof;
-
-    /**
-     * @var PPP
-     */
-    public $ppp;
-
-    /**
-     * @var Sprinter
-     */
-    public $sprinter;
-
-    /**
-     * @var MPL
-     */
-    public $mpl;
-
-    protected $requiredFields = ['destination'];
 
     public static function __set_state($values)
     {
@@ -115,4 +68,54 @@ class Waybill extends Base
 
         return $instance;
     }
+
+    /**
+     * @var string
+     */
+    public $destination;
+
+    /**
+     * @var string
+     */
+    public $parcel;
+
+    /**
+     * @var string
+     */
+    public $barcode;
+
+    /**
+     * @var string
+     */
+    public $comment;
+
+    /**
+     * @var Transoflex
+     */
+    public $tof;
+
+    /**
+     * @var PPP
+     */
+    public $ppp;
+
+    /**
+     * @var Sprinter
+     */
+    public $sprinter;
+
+    /**
+     * @var MPL
+     */
+    public $mpl;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'fuvarlevel';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = ['destination'];
 }

@@ -8,7 +8,6 @@ use DateTime;
 
 class ItemLedger extends Base
 {
-
     /**
      * {@inheritdoc}
      */

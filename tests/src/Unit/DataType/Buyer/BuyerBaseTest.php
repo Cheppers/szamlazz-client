@@ -4,7 +4,7 @@ namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Buyer;
 
 use Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase<extended>
@@ -21,7 +21,7 @@ class BuyerBaseTest extends BaseTestBase
             '<xmlszamla></xmlszamla>',
         ]);
 
-        $basicDoc = new \DOMDocument();
+        $basicDoc = new DOMDocument();
         $basicDoc->loadXML($xml);
 
         $buyerBaseBasic = new BuyerBase();
@@ -34,7 +34,7 @@ class BuyerBaseTest extends BaseTestBase
                     ''
                 ]),
                 $buyerBaseEmpty,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

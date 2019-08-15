@@ -3,9 +3,8 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Buyer;
 
 use Cheppers\SzamlazzClient\DataType\Buyer\InvoiceBuyer;
-use Cheppers\SzamlazzClient\DataType\BuyerLedger;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Buyer\InvoiceBuyer<extended>
@@ -22,7 +21,7 @@ class InvoiceBuyerTest extends BaseTestBase
             '<xmlszamla></xmlszamla>',
         ]);
 
-        $basicDoc = new \DOMDocument();
+        $basicDoc = new DOMDocument();
         $basicDoc->loadXML($xml);
 
         $invoiceBuyerBasic = new InvoiceBuyer();
@@ -53,7 +52,7 @@ class InvoiceBuyerTest extends BaseTestBase
                     ''
                 ]),
                 $invoiceBuyerEmpty,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

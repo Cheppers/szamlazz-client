@@ -9,6 +9,32 @@ use Cheppers\SzamlazzClient\DataType\BuyerLedger;
 class InvoiceBuyer extends BuyerBase
 {
     /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'name'          => 'nev',
+        'country'       => 'orszag',
+        'zip'           => 'irsz',
+        'city'          => 'telepules',
+        'address'       => 'cim',
+        'email'         => 'email',
+        'sendEmail'     => 'sendEmail',
+        'taxPayer'      => 'adoalany',
+        'taxNumber'     => 'adoszam',
+        'taxNumberEU'   => 'adoszamEU',
+        'postalName'    => 'postazasiNev',
+        'postalCountry' => 'postazasiOrszag',
+        'postalZip'     => 'postazasiIrsz',
+        'postalCity'    => 'postazasiTelepules',
+        'postalAddress' => 'postazasiCim',
+        'buyerLedger'   => 'vevoFokonyv',
+        'id'            => 'azonosito',
+        'signatoryName' => 'alairoNeve',
+        'phoneNumber'   => 'telefonszam',
+        'comment'       => 'megjegyzes',
+    ];
+
+    /**
      * @var string
      */
     public $name;
@@ -102,32 +128,6 @@ class InvoiceBuyer extends BuyerBase
      * @var string
      */
     public $comment;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static $propertyMapping = [
-        'name'          => 'nev',
-        'country'       => 'orszag',
-        'zip'           => 'irsz',
-        'city'          => 'telepules',
-        'address'       => 'cim',
-        'email'         => 'email',
-        'sendEmail'     => 'sendEmail',
-        'taxPayer'      => 'adoalany',
-        'taxNumber'     => 'adoszam',
-        'taxNumberEU'   => 'adoszamEU',
-        'postalName'    => 'postazasiNev',
-        'postalCountry' => 'postazasiOrszag',
-        'postalZip'     => 'postazasiIrsz',
-        'postalCity'    => 'postazasiTelepules',
-        'postalAddress' => 'postazasiCim',
-        'buyerLedger'   => 'vevoFokonyv',
-        'id'            => 'azonosito',
-        'signatoryName' => 'alairoNeve',
-        'phoneNumber'   => 'telefonszam',
-        'comment'       => 'megjegyzes',
-    ];
 
     /**
      * {@inheritdoc}

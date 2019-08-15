@@ -8,7 +8,6 @@ use Cheppers\SzamlazzClient\DataType\Base;
 
 class Transoflex extends Base
 {
-
     /**
      * {@inheritdoc}
      */

@@ -7,6 +7,17 @@ namespace Cheppers\SzamlazzClient\DataType\Settings;
 class ReverseInvoiceSettings extends SettingsBase
 {
     /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'apiKey'               => 'szamlaagentkulcs',
+        'eInvoice'             => 'eszamla',
+        'keychainPassword'     => 'kulcstartojelszo',
+        'invoiceDownload'      => 'szamlaLetoltes',
+        'invoiceDownloadCount' => 'szamlaLetoltesPld',
+    ];
+
+    /**
      * @var bool
      */
     public $eInvoice;
@@ -33,13 +44,5 @@ class ReverseInvoiceSettings extends SettingsBase
         'apiKey',
         'eInvoice',
         'invoiceDownload'
-    ];
-
-    protected static $propertyMapping = [
-        'apiKey'               => 'szamlaagentkulcs',
-        'eInvoice'             => 'eszamla',
-        'keychainPassword'     => 'kulcstartojelszo',
-        'invoiceDownload'      => 'szamlaLetoltes',
-        'invoiceDownloadCount' => 'szamlaLetoltesPld',
     ];
 }

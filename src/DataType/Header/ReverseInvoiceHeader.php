@@ -5,15 +5,10 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Base;
+use DateTime;
 
 class ReverseInvoiceHeader extends Base
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'fejlec';
-
     /**
      * {@inheritdoc}
      */
@@ -25,22 +20,17 @@ class ReverseInvoiceHeader extends Base
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = ['accountNumber'];
-
-    /**
      * @var string
      */
     public $accountNumber;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $issueDate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $fulfillmentDate;
 
@@ -48,4 +38,14 @@ class ReverseInvoiceHeader extends Base
      * @var string
      */
     public $type;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'fejlec';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = ['accountNumber'];
 }

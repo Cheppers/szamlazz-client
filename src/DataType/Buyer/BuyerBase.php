@@ -9,6 +9,13 @@ use Cheppers\SzamlazzClient\DataType\Base;
 class BuyerBase extends Base
 {
     /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'email' => 'email',
+    ];
+
+    /**
      * @var string
      */
     public $email;
@@ -17,13 +24,6 @@ class BuyerBase extends Base
      * {@inheritdoc}
      */
     protected $complexTypeName = 'vevo';
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static $propertyMapping = [
-        'email' => 'email',
-    ];
 
     /**
      * {@inheritdoc}

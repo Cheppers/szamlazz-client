@@ -3,6 +3,8 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit;
 
 use Cheppers\SzamlazzClient\Utils;
+use DOMDocument;
+use LibXMLError;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\Test\TestLogger;
@@ -49,7 +51,7 @@ class UtilsTest extends TestCase
             '</QueryTaxpayerResponse>'
         ]);
 
-        $validDoc = new \DOMDocument();
+        $validDoc = new DOMDocument();
         $validDoc->loadXML($validXml);
 
         $invalidXml = implode(PHP_EOL, [
@@ -61,10 +63,10 @@ class UtilsTest extends TestCase
             '</QueryTaxpayerResponse>'
         ]);
 
-        $invalidDoc = new \DOMDocument();
+        $invalidDoc = new DOMDocument();
         $invalidDoc->loadXML($invalidXml);
 
-        $error = new \LibXMLError();
+        $error = new LibXMLError();
         $error->level = 2;
         $error->code = 1872;
         $error->column = 0;
@@ -81,7 +83,7 @@ class UtilsTest extends TestCase
                 [
                     $error,
                 ],
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
         ];
     }
@@ -89,7 +91,7 @@ class UtilsTest extends TestCase
     /**
      * @dataProvider casesValidateTaxpayerSuccessResponse
      */
-    public function testValidateTaxpayerSuccessResponse(array $expected, \DOMDocument $doc)
+    public function testValidateTaxpayerSuccessResponse(array $expected, DOMDocument $doc)
     {
         $errors = Utils::validateTaxpayerSuccessResponse($doc);
 
@@ -117,7 +119,7 @@ class UtilsTest extends TestCase
             '</QueryTaxpayerResponse>'
         ]);
 
-        $validDoc = new \DOMDocument();
+        $validDoc = new DOMDocument();
         $validDoc->loadXML($validXml);
 
         $invalidXml = implode(PHP_EOL, [
@@ -128,10 +130,10 @@ class UtilsTest extends TestCase
             ]),
         ]);
 
-        $invalidDoc = new \DOMDocument();
+        $invalidDoc = new DOMDocument();
         $invalidDoc->loadXML($invalidXml);
 
-        $error = new \LibXMLError();
+        $error = new LibXMLError();
         $error->level = 2;
         $error->code = 1872;
         $error->column = 0;
@@ -148,7 +150,7 @@ class UtilsTest extends TestCase
                 [
                     $error,
                 ],
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
         ];
     }
@@ -156,7 +158,7 @@ class UtilsTest extends TestCase
     /**
      * @dataProvider casesValidateTaxpayerErrorResponse
      */
-    public function testValidateTaxpayerErrorResponse(array $expected, \DOMDocument $doc)
+    public function testValidateTaxpayerErrorResponse(array $expected, DOMDocument $doc)
     {
         $errors = Utils::validateTaxpayerErrorResponse($doc);
 
@@ -179,7 +181,7 @@ class UtilsTest extends TestCase
             '</xmlszamlavalasz>'
         ]);
 
-        $validDoc = new \DOMDocument();
+        $validDoc = new DOMDocument();
         $validDoc->loadXML($validXml);
 
         $invalidXml = implode(PHP_EOL, [
@@ -190,10 +192,10 @@ class UtilsTest extends TestCase
             ]),
         ]);
 
-        $invalidDoc = new \DOMDocument();
+        $invalidDoc = new DOMDocument();
         $invalidDoc->loadXML($invalidXml);
 
-        $error = new \LibXMLError();
+        $error = new LibXMLError();
         $error->level = 2;
         $error->code = 1872;
         $error->column = 0;
@@ -210,7 +212,7 @@ class UtilsTest extends TestCase
                 [
                     $error,
                 ],
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
         ];
     }
@@ -218,7 +220,7 @@ class UtilsTest extends TestCase
     /**
      * @dataProvider casesValidateInvoiceResponse
      */
-    public function testValidateInvoiceResponse(array $expected, \DOMDocument $doc)
+    public function testValidateInvoiceResponse(array $expected, DOMDocument $doc)
     {
         $errors = Utils::validateInvoiceResponse($doc);
 
@@ -230,7 +232,7 @@ class UtilsTest extends TestCase
         $logger = new TestLogger();
         $logger->error('Test message');
 
-        $error = new \LibXMLError();
+        $error = new LibXMLError();
         $error->message = 'Test message';
 
         return [

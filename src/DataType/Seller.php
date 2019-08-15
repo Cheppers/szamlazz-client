@@ -6,12 +6,6 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 class Seller extends Base
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'elado';
-
     /**
      * {@inheritdoc}
      */
@@ -23,8 +17,6 @@ class Seller extends Base
         'emailBody'         => 'emailSzoveg',
         'signerName'        => 'alairoNeve',
     ];
-
-    protected $requiredFields = [];
 
     /**
      * @var string
@@ -55,4 +47,14 @@ class Seller extends Base
      * @var string
      */
     public $signerName;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'elado';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [];
 }

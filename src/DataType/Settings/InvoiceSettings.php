@@ -7,16 +7,6 @@ namespace Cheppers\SzamlazzClient\DataType\Settings;
 class InvoiceSettings extends ReverseInvoiceSettings
 {
     /**
-     * @var int
-     */
-    public $responseVersion;
-
-    /**
-     * @var string
-     */
-    public $aggregator;
-
-    /**
      * {@inheritdoc}
      */
     protected static $propertyMapping = [
@@ -28,4 +18,14 @@ class InvoiceSettings extends ReverseInvoiceSettings
         'responseVersion'      => 'valaszVerzio',
         'aggregator'           => 'aggregator',
     ];
+
+    /**
+     * @var int
+     */
+    public $responseVersion;
+
+    /**
+     * @var string
+     */
+    public $aggregator;
 }

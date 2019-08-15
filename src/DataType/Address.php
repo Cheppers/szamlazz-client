@@ -6,61 +6,6 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 class Address extends Base
 {
-    /**
-     * @var string
-     */
-    public $countryCode;
-
-    /**
-     * @var string
-     */
-    public $postalCode;
-
-    /**
-     * @var string
-     */
-    public $city;
-
-    /**
-     * @var string
-     */
-    public $streetName;
-
-    /**
-     * @var string
-     */
-    public $publicPlaceCategory;
-
-    /**
-     * @var string
-     */
-    public $number;
-
-    /**
-     * @var string
-     */
-    public $building;
-
-    /**
-     * @var string
-     */
-    public $staircase;
-
-    /**
-     * @var string
-     */
-    public $floor;
-
-    /**
-     * @var string
-     */
-    public $door;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = ['countryCode'];
-
     public static function __set_state($root)
     {
         $instance = new static();
@@ -115,4 +60,59 @@ class Address extends Base
 
         return $instance;
     }
+
+    /**
+     * @var string
+     */
+    public $countryCode;
+
+    /**
+     * @var string
+     */
+    public $postalCode;
+
+    /**
+     * @var string
+     */
+    public $city;
+
+    /**
+     * @var string
+     */
+    public $streetName;
+
+    /**
+     * @var string
+     */
+    public $publicPlaceCategory;
+
+    /**
+     * @var string
+     */
+    public $number;
+
+    /**
+     * @var string
+     */
+    public $building;
+
+    /**
+     * @var string
+     */
+    public $staircase;
+
+    /**
+     * @var string
+     */
+    public $floor;
+
+    /**
+     * @var string
+     */
+    public $door;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = ['countryCode'];
 }

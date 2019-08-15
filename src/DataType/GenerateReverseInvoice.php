@@ -7,60 +7,16 @@ namespace Cheppers\SzamlazzClient\DataType;
 use Cheppers\SzamlazzClient\DataType\Buyer\BuyerBase;
 use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Settings\ReverseInvoiceSettings;
+use Exception;
 
 class GenerateReverseInvoice extends RequestBase
 {
-    /**
-     * @var string
-     */
-    public $fileName = 'action-szamla_agent_st';
-
-    /**
-     * @var string
-     */
-    protected $xsdDir = 'agentst';
-
-    /**
-     * @var string
-     */
-    protected $xmlName = 'xmlszamlast';
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = [
-        'settings',
-        'header',
-        'seller',
-        'buyer',
-    ];
-
     protected static $propertyMapping = [
         'settings'    => 'beallitasok',
         'header'      => 'fejlec',
         'seller'      => 'elado',
         'buyer'       => 'vevo',
     ];
-
-    /**
-     * @var ReverseInvoiceSettings
-     */
-    public $settings;
-
-    /**
-     * @var ReverseInvoiceHeader
-     */
-    public $header;
-
-    /**
-     * @var Seller
-     */
-    public $seller;
-
-    /**
-     * @var BuyerBase
-     */
-    public $buyer;
 
     public static function __set_state($values)
     {
@@ -91,12 +47,57 @@ class GenerateReverseInvoice extends RequestBase
     }
 
     /**
-     * @throws \Exception
+     * @var string
+     */
+    public $fileName = 'action-szamla_agent_st';
+
+    /**
+     * @var string
+     */
+    protected $xsdDir = 'agentst';
+
+    /**
+     * @var string
+     */
+    protected $xmlName = 'xmlszamlast';
+
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = [
+        'settings',
+        'header',
+        'seller',
+        'buyer',
+    ];
+
+    /**
+     * @var ReverseInvoiceSettings
+     */
+    public $settings;
+
+    /**
+     * @var ReverseInvoiceHeader
+     */
+    public $header;
+
+    /**
+     * @var Seller
+     */
+    public $seller;
+
+    /**
+     * @var BuyerBase
+     */
+    public $buyer;
+
+    /**
+     * @throws Exception
      */
     public function buildXmlString(): string
     {
         if ($this->isEmpty()) {
-            throw new \Exception('Missing required field');
+            throw new Exception('Missing required field');
         }
 
         $doc = $this->getXmlBase();

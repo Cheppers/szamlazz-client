@@ -143,7 +143,7 @@ class GenerateReverseInvoiceTest extends TestCase
 
     /**
      * @dataProvider casesBuildXmlStringSuccess
-     * @throws Exception
+     * @throws \Exception
      */
     public function testBuildXmlStringSuccess(string $expected, GenerateReverseInvoice $generateReverseInvoice)
     {

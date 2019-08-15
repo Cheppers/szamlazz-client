@@ -21,9 +21,6 @@ use ReflectionException;
 
 class SzamlazzClient implements SzamlazzClientInterface
 {
-
-    const API_URL = 'szamla/';
-
     const REQUEST_TIMEOUT = 30;
 
     /**
@@ -39,7 +36,7 @@ class SzamlazzClient implements SzamlazzClientInterface
     /**
      * @var string
      */
-    protected $baseUri = 'https://www.szamlazz.hu';
+    protected $baseUri = 'https://www.szamlazz.hu/szamla';
 
     public function __construct(
         ClientInterface $client,
@@ -68,8 +65,7 @@ class SzamlazzClient implements SzamlazzClientInterface
     }
 
     /**
-     * @throws GuzzleException
-     * @throws ReflectionException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws Exception
      */
     public function getTaxpayer(QueryTaxpayer $queryTaxpayer): ?TaxPayerResponse
@@ -180,7 +176,7 @@ class SzamlazzClient implements SzamlazzClientInterface
     public function sendSzamlaAgentRequest(string $fileName, string $xml): ResponseInterface
     {
         return $this->sendPost(
-            self::API_URL,
+            $this->getUri(),
             [
                 'multipart' => [
                     [
@@ -193,9 +189,9 @@ class SzamlazzClient implements SzamlazzClientInterface
         );
     }
 
-    protected function getUri($path)
+    protected function getUri()
     {
-        return $this->getBaseUri() . "/$path";
+        return $this->getBaseUri() . "/";
     }
 
     /**
@@ -203,19 +199,6 @@ class SzamlazzClient implements SzamlazzClientInterface
      */
     protected function sendPost(string $path, array $options = []): ResponseInterface
     {
-        return $this->sendRequest('POST', $path, $options);
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    protected function sendRequest(
-        $method,
-        $path,
-        array $options = []
-    ): ResponseInterface {
-        $uri = $this->getUri($path);
-
-        return $this->client->request($method, $uri, $options);
+        return $this->client->request('POST', $path, $options);
     }
 }

@@ -3,9 +3,8 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Settings;
 
 use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
-use Cheppers\SzamlazzClient\DataType\Settings\SettingsBase;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings<extended>
@@ -31,7 +30,7 @@ class InvoiceSettingsTest extends BaseTestBase
 
         $settingsBasic = InvoiceSettings::__set_state($values);
         $settingsEmpty = InvoiceSettings::__set_state([]);
-        $basicDoc = new \DOMDocument();
+        $basicDoc = new DOMDocument();
         $basicDoc->loadXML($xml);
 
         return [
@@ -41,7 +40,7 @@ class InvoiceSettingsTest extends BaseTestBase
                     ''
                 ]),
                 $settingsEmpty,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

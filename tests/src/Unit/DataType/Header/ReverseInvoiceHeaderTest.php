@@ -4,7 +4,7 @@ namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Header\ReverseInvoiceHeader<extended>
@@ -32,7 +32,7 @@ class ReverseInvoiceHeaderTest extends BaseTestBase
 
         $emptyHeader = ReverseInvoiceHeader::__set_state([]);
         $basicHeader = ReverseInvoiceHeader::__set_state($values);
-        $basicXml = new \DOMDocument();
+        $basicXml = new DOMDocument();
         $basicXml->loadXML($xml);
 
         return [
@@ -42,7 +42,7 @@ class ReverseInvoiceHeaderTest extends BaseTestBase
                     '',
                 ]),
                 $emptyHeader,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

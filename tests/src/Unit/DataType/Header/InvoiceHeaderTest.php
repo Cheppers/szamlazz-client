@@ -4,7 +4,7 @@ namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\Tests\Unit\DataType\BaseTestBase;
-use PHPUnit\Framework\TestCase;
+use DOMDocument;
 
 /**
  * @covers \Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader<extended>
@@ -50,7 +50,7 @@ class InvoiceHeaderTest extends BaseTestBase
 
         $emptyHeader = InvoiceHeader::__set_state([]);
         $basicHeader = InvoiceHeader::__set_state($values);
-        $basicXml = new \DOMDocument();
+        $basicXml = new DOMDocument();
         $basicXml->loadXML($xml);
 
         return [
@@ -60,7 +60,7 @@ class InvoiceHeaderTest extends BaseTestBase
                     '',
                 ]),
                 $emptyHeader,
-                new \DOMDocument(),
+                new DOMDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [

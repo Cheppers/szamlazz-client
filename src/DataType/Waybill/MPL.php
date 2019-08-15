@@ -8,7 +8,6 @@ use Cheppers\SzamlazzClient\DataType\Base;
 
 class MPL extends Base
 {
-
     /**
      * {@inheritdoc}
      */
@@ -19,20 +18,6 @@ class MPL extends Base
         'service'      => 'kulonszolgaltatasok',
         'insuredValue' => 'erteknyilvanitas',
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = [
-        'buyerCode',
-        'barcode',
-        'weight',
-    ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'mpl';
 
     /**
      * @var string
@@ -58,4 +43,18 @@ class MPL extends Base
      * @var double
      */
     public $insuredValue;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'mpl';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'buyerCode',
+        'barcode',
+        'weight',
+    ];
 }

@@ -6,12 +6,6 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 class Item extends Base
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'tetel';
-
     /**
      * {@inheritdoc}
      */
@@ -89,6 +83,11 @@ class Item extends Base
      * @var ItemLedger
      */
     public $itemLedger;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'tetel';
 
     /**
      * {@inheritdoc}

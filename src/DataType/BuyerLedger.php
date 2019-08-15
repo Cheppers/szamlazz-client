@@ -1,17 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
+use DateTime;
+
 class BuyerLedger extends Base
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'vevoFokonyv';
-
     /**
      * {@inheritdoc}
      */
@@ -23,7 +19,7 @@ class BuyerLedger extends Base
     ];
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $bookingDate;
 
@@ -41,6 +37,11 @@ class BuyerLedger extends Base
      * @var bool
      */
     public $continuousCompletion;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'vevoFokonyv';
 
     /**
      * {@inheritdoc}

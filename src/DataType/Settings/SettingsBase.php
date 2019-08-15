@@ -9,6 +9,13 @@ use Cheppers\SzamlazzClient\DataType\Base;
 class SettingsBase extends Base
 {
     /**
+     * {@inheritdoc}
+     */
+    protected static $propertyMapping = [
+        'apiKey' => 'szamlaagentkulcs',
+    ];
+
+    /**
      * @var string
      */
     public $apiKey;
@@ -18,9 +25,8 @@ class SettingsBase extends Base
      */
     public $complexTypeName = 'beallitasok';
 
-    protected static $propertyMapping = [
-        'apiKey' => 'szamlaagentkulcs',
-    ];
-
+    /**
+     * {@inheritdoc}
+     */
     protected $requiredFields = ['apiKey'];
 }

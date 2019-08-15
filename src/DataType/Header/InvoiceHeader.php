@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType\Header;
 
@@ -9,12 +9,6 @@ use DateTime;
 
 class InvoiceHeader extends Base
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $complexTypeName = 'fejlec';
-
     /**
      * {@inheritdoc}
      */
@@ -41,18 +35,6 @@ class InvoiceHeader extends Base
         'correctionToPay'   => 'fizetendoKorrekcio',
         'paid'              => 'fizetve',
         'profitVat'         => 'arresAfa',
-    ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = [
-       'issueDate',
-       'fulfillmentDate',
-       'paymentDue',
-       'paymentMethod',
-       'currency',
-       'invoiceLanguage',
     ];
 
     /**
@@ -164,4 +146,21 @@ class InvoiceHeader extends Base
      * @var bool
      */
     public $profitVat;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $complexTypeName = 'fejlec';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'issueDate',
+        'fulfillmentDate',
+        'paymentDue',
+        'paymentMethod',
+        'currency',
+        'invoiceLanguage',
+    ];
 }

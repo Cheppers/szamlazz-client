@@ -3,6 +3,8 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType\Response;
 
 use Cheppers\SzamlazzClient\DataType\Response\InvoiceResponse;
+use DOMDocument;
+use DOMElement;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,14 +39,14 @@ class InvoiceResponseTest extends TestCase
             '</xmlszamlavalasz>'
         ]);
 
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->loadXML($xml);
         $elementBasic = $doc->getElementsByTagName('xmlszamlavalasz')[0];
 
         return [
             'empty' => [
                 new InvoiceResponse(),
-                new \DOMElement('empty'),
+                new DOMElement('empty'),
             ],
             'basic' => [
                 $invoiceResponseBasic,
@@ -56,7 +58,7 @@ class InvoiceResponseTest extends TestCase
     /**
      * @dataProvider casesSetState
      */
-    public function testSetState(InvoiceResponse $expected, \DOMElement $element)
+    public function testSetState(InvoiceResponse $expected, DOMElement $element)
     {
         $instance = InvoiceResponse::__set_state($element);
 

@@ -9,35 +9,9 @@ use Cheppers\SzamlazzClient\DataType\Header\InvoiceHeader;
 use Cheppers\SzamlazzClient\DataType\Settings\InvoiceSettings;
 use Cheppers\SzamlazzClient\DataType\Waybill\Waybill;
 use Exception;
-use phpDocumentor\Reflection\Types\This;
 
 class GenerateInvoice extends RequestBase
 {
-    /**
-     * @var string
-     */
-    public $fileName = 'action-xmlagentxmlfile';
-
-    /**
-     * @var string
-     */
-    public $xsdDir = 'agent';
-
-    /**
-     * @var string
-     */
-    protected $xmlName = 'xmlszamla';
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $requiredFields = [
-        'settings',
-        'header',
-        'seller',
-        'buyer',
-        'items',
-    ];
     protected static $propertyMapping = [
         'settings'    => 'beallitasok',
         'header'      => 'fejlec',
@@ -46,36 +20,6 @@ class GenerateInvoice extends RequestBase
         'waybill'     => 'fuvarlevel',
         'items'       => 'tetelek',
     ];
-
-    /**
-     * @var InvoiceSettings
-     */
-    public $settings;
-
-    /**
-     * @var InvoiceHeader
-     */
-    public $header;
-
-    /**
-     * @var InvoiceBuyer
-     */
-    public $buyer;
-
-    /**
-     * @var Seller
-     */
-    public $seller;
-
-    /**
-     * @var Waybill
-     */
-    public $waybill;
-
-    /**
-     * @var Item[]
-     */
-    public $items = [];
 
     public static function __set_state($values)
     {
@@ -112,6 +56,62 @@ class GenerateInvoice extends RequestBase
 
         return $instance;
     }
+
+    /**
+     * @var string
+     */
+    public $fileName = 'action-xmlagentxmlfile';
+
+    /**
+     * @var string
+     */
+    public $xsdDir = 'agent';
+
+    /**
+     * @var InvoiceSettings
+     */
+    public $settings;
+
+    /**
+     * @var InvoiceHeader
+     */
+    public $header;
+
+    /**
+     * @var InvoiceBuyer
+     */
+    public $buyer;
+
+    /**
+     * @var Seller
+     */
+    public $seller;
+
+    /**
+     * @var Waybill
+     */
+    public $waybill;
+
+    /**
+     * @var Item[]
+     */
+    public $items = [];
+
+    /**
+     * @var string
+     */
+    protected $xmlName = 'xmlszamla';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $requiredFields = [
+        'settings',
+        'header',
+        'seller',
+        'buyer',
+        'items',
+    ];
 
     /**
      * @throws Exception

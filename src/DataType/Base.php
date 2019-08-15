@@ -6,28 +6,10 @@ namespace Cheppers\SzamlazzClient\DataType;
 
 abstract class Base
 {
-
-    /**
-     * @var string
-     */
-    protected $complexTypeName;
-
-    public function getComplexTypeName(): string
-    {
-        return $this->complexTypeName;
-    }
-
     /**
      * @var string[]
      */
     protected static $propertyMapping = [];
-
-    /**
-     * Internal name of the required fields.
-     *
-     * @var string[]
-     */
-    protected $requiredFields = [];
 
     public static function __set_state($values)
     {
@@ -42,6 +24,23 @@ abstract class Base
         }
 
         return $instance;
+    }
+
+    /**
+     * @var string
+     */
+    protected $complexTypeName;
+
+    /**
+     * Internal name of the required fields.
+     *
+     * @var string[]
+     */
+    protected $requiredFields = [];
+
+    public function getComplexTypeName(): string
+    {
+        return $this->complexTypeName;
     }
 
     public function isEmpty(): bool

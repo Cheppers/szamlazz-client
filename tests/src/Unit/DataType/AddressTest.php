@@ -3,6 +3,7 @@
 namespace Cheppers\SzamlazzClient\Tests\Unit\DataType;
 
 use Cheppers\SzamlazzClient\DataType\Address;
+use DOMDocument;
 use PHPUnit\Framework\TestCase;
 
 class AddressTest extends TestCase
@@ -60,7 +61,7 @@ class AddressTest extends TestCase
      */
     public static function testSetState($expected, string $xml)
     {
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->loadXML($xml);
         $elements = $doc->getElementsByTagName('taxpayerAddress')->item(0);
 

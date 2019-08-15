@@ -5,11 +5,11 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient;
 
 use DOMDocument;
+use LibXMLError;
 use Psr\Log\LoggerInterface;
 
 class Utils
 {
-
     public static function getProjectRoot(): string
     {
         return dirname(__DIR__);
@@ -50,8 +50,8 @@ class Utils
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \LibXMLError[] $errors
+     * @param LoggerInterface $logger
+     * @param LibXMLError[] $errors
      */
     public static function logXmlErrors(LoggerInterface $logger, array $errors)
     {
