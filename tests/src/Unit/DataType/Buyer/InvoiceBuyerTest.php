@@ -11,18 +11,18 @@ use DOMDocument;
  */
 class InvoiceBuyerTest extends BaseTestBase
 {
+
+    /**
+     * {@inheritdoc}
+     */
     protected $className = InvoiceBuyer::class;
 
+    /**
+     * {@inheritdoc}
+     */
     public function casesBuildXmlData()
     {
         $invoiceBuyerEmpty = new InvoiceBuyer();
-        $xml = implode(PHP_EOL, [
-            '<?xml version="1.0"?>',
-            '<xmlszamla></xmlszamla>',
-        ]);
-
-        $basicDoc = new DOMDocument();
-        $basicDoc->loadXML($xml);
 
         $invoiceBuyerBasic = new InvoiceBuyer();
         $invoiceBuyerBasic->id = 'Foo';
@@ -49,41 +49,45 @@ class InvoiceBuyerTest extends BaseTestBase
             'empty' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
+                    '<xmlszamla>',
+                    '  <nev></nev>',
+                    '  <irsz></irsz>',
+                    '  <telepules></telepules>',
+                    '  <cim></cim>',
+                    '</xmlszamla>',
                     ''
                 ]),
                 $invoiceBuyerEmpty,
-                new DOMDocument(),
+                $this->createDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
                     '<xmlszamla>',
-                    '  <vevo>',
-                    '    <nev>Bar</nev>',
-                    '    <orszag>Hungary</orszag>',
-                    '    <irsz>zip</irsz>',
-                    '    <telepules>Budapest</telepules>',
-                    '    <cim>FooBar</cim>',
-                    '    <email>test@test.com</email>',
-                    '    <sendEmail>true</sendEmail>',
-                    '    <adoalany>112233</adoalany>',
-                    '    <adoszam>taxnumber</adoszam>',
-                    '    <adoszamEU>EU taxnumber</adoszamEU>',
-                    '    <postazasiNev>Postal name</postazasiNev>',
-                    '    <postazasiOrszag>Austria</postazasiOrszag>',
-                    '    <postazasiIrsz>1123</postazasiIrsz>',
-                    '    <postazasiTelepules>Postal city</postazasiTelepules>',
-                    '    <postazasiCim>Postal address</postazasiCim>',
-                    '    <azonosito>Foo</azonosito>',
-                    '    <alairoNeve>Signatory Name</alairoNeve>',
-                    '    <telefonszam>phone number</telefonszam>',
-                    '    <megjegyzes>test comment</megjegyzes>',
-                    '  </vevo>',
+                    '  <nev>Bar</nev>',
+                    '  <orszag>Hungary</orszag>',
+                    '  <irsz>zip</irsz>',
+                    '  <telepules>Budapest</telepules>',
+                    '  <cim>FooBar</cim>',
+                    '  <email>test@test.com</email>',
+                    '  <sendEmail>true</sendEmail>',
+                    '  <adoalany>112233</adoalany>',
+                    '  <adoszam>taxnumber</adoszam>',
+                    '  <adoszamEU>EU taxnumber</adoszamEU>',
+                    '  <postazasiNev>Postal name</postazasiNev>',
+                    '  <postazasiOrszag>Austria</postazasiOrszag>',
+                    '  <postazasiIrsz>1123</postazasiIrsz>',
+                    '  <postazasiTelepules>Postal city</postazasiTelepules>',
+                    '  <postazasiCim>Postal address</postazasiCim>',
+                    '  <azonosito>Foo</azonosito>',
+                    '  <alairoNeve>Signatory Name</alairoNeve>',
+                    '  <telefonszam>phone number</telefonszam>',
+                    '  <megjegyzes>test comment</megjegyzes>',
                     '</xmlszamla>',
                     '',
                 ]),
                 $invoiceBuyerBasic,
-                $basicDoc,
+                $this->createDocument(),
             ]
         ];
     }

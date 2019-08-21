@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType\Waybill;
 
@@ -22,6 +22,9 @@ class Waybill extends Base
         'mpl'         => 'mpl',
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function __set_state($values)
     {
         $instance = new static();
@@ -32,22 +35,6 @@ class Waybill extends Base
             }
 
             switch ($key) {
-                case 'destination':
-                    $instance->destination = $value;
-                    break;
-
-                case 'parcel':
-                    $instance->parcel = $value;
-                    break;
-
-                case 'comment':
-                    $instance->comment = $value;
-                    break;
-
-                case 'barcode':
-                    $instance->barcode = $value;
-                    break;
-
                 case 'tof':
                     $instance->tof = Transoflex::__set_state($value);
                     break;
@@ -62,6 +49,10 @@ class Waybill extends Base
 
                 case 'mpl':
                     $instance->mpl = MPL::__set_state($value);
+                    break;
+
+                default:
+                    $instance->{$key} = $value;
                     break;
             }
         }

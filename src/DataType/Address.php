@@ -1,11 +1,15 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
 class Address extends Base
 {
+
+    /**
+     * @param \DOMElement $root
+     */
     public static function __set_state($root)
     {
         $instance = new static();
@@ -17,43 +21,16 @@ class Address extends Base
 
             switch ($element->nodeName) {
                 case 'countryCode':
-                    $instance->countryCode = $element->nodeValue;
-                    break;
-
                 case 'postalCode':
-                    $instance->postalCode = $element->nodeValue;
-                    break;
-
                 case 'city':
-                    $instance->city = $element->nodeValue;
-                    break;
-
                 case 'streetName':
-                    $instance->streetName = $element->nodeValue;
-                    break;
-
                 case 'publicPlaceCategory':
-                    $instance->publicPlaceCategory = $element->nodeValue;
-                    break;
-
                 case 'number':
-                    $instance->number = $element->nodeValue;
-                    break;
-
                 case 'building':
-                    $instance->building = $element->nodeValue;
-                    break;
-
                 case 'staircase':
-                    $instance->staircase = $element->nodeValue;
-                    break;
-
                 case 'floor':
-                    $instance->floor = $element->nodeValue;
-                    break;
-
                 case 'door':
-                    $instance->door = $element->nodeValue;
+                    $instance->{$element->nodeName} = $element->nodeValue;
                     break;
             }
         }

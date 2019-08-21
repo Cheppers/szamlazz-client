@@ -90,6 +90,7 @@ class GenerateReverseInvoiceTest extends TestCase
     public function casesBuildXmlStringSuccess()
     {
         $generateReverseInvoice = new GenerateReverseInvoice();
+        $generateReverseInvoice->setFormatOutput(true);
         $settings = new ReverseInvoiceSettings();
         $settings->apiKey = 'my-api-key';
         $settings->eInvoice = false;
@@ -110,30 +111,30 @@ class GenerateReverseInvoiceTest extends TestCase
 
         return [
             'basic' => [
-                implode('', [
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+                implode("\n", [
+                    '<?xml version="1.0" encoding="UTF-8"?>',
                     implode(' ', [
                         '<xmlszamlast xmlns="http://www.szamlazz.hu/xmlszamlast"',
                         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
                         'xsi:schemaLocation="http://www.szamlazz.hu/xmlszamlast',
                         'http://www.szamlazz.hu/szamla/docs/xsds/agentst/xmlszamlast.xsd">',
                     ]),
-                    '<beallitasok>',
-                    '<szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
-                    '<eszamla>false</eszamla>',
-                    '<szamlaLetoltes>true</szamlaLetoltes>',
-                    '</beallitasok>',
-                    '<fejlec>',
-                    '<szamlaszam>E-TST</szamlaszam>',
-                    '</fejlec>',
-                    '<elado>',
-                    '<emailReplyto>elado@example.com</emailReplyto>',
-                    '<emailTargy>subject</emailTargy>',
-                    '<emailSzoveg>Lorem ipsum</emailSzoveg>',
-                    '</elado>',
-                    '<vevo>',
-                    '<email>buyer@example.com</email>',
-                    '</vevo>',
+                    '  <beallitasok>',
+                    '    <szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
+                    '    <eszamla>false</eszamla>',
+                    '    <szamlaLetoltes>true</szamlaLetoltes>',
+                    '  </beallitasok>',
+                    '  <fejlec>',
+                    '    <szamlaszam>E-TST</szamlaszam>',
+                    '  </fejlec>',
+                    '  <elado>',
+                    '    <emailReplyto>elado@example.com</emailReplyto>',
+                    '    <emailTargy>subject</emailTargy>',
+                    '    <emailSzoveg>Lorem ipsum</emailSzoveg>',
+                    '  </elado>',
+                    '  <vevo>',
+                    '    <email>buyer@example.com</email>',
+                    '  </vevo>',
                     "</xmlszamlast>\n",
                 ]),
                 $generateReverseInvoice,
@@ -150,25 +151,5 @@ class GenerateReverseInvoiceTest extends TestCase
         $actual = $generateReverseInvoice->buildXmlString();
 
         static::assertSame($expected, $actual);
-    }
-
-    public function casesBuildXmlStringFailed()
-    {
-        return [
-            'empty' => [
-                new Exception('Missing required field'),
-                new GenerateReverseInvoice(),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider casesBuildXmlStringFailed
-     * @throws Exception
-     */
-    public function testBuildXmlStringFailed(Exception $expected, GenerateReverseInvoice $generateReverseInvoice)
-    {
-        static::expectExceptionObject($expected);
-        $generateReverseInvoice->buildXmlString();
     }
 }

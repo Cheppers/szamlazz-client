@@ -144,6 +144,7 @@ class SzamlazzClientTest extends TestCase
 
     /**
      * @dataProvider casesGetTaxPayerSuccess
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testGetTaxPayerSuccess(

@@ -18,12 +18,23 @@ abstract class BaseTestBase extends TestCase
     /**
      * @dataProvider casesBuildXmlData
      */
-    public function testBuildXmlData(string $expected, $classInstance, DOMDocument $doc)
+    public function testBuildXmlData(string $expected, Base $classInstance, DOMDocument $doc)
     {
-        /** @var Base $classInstance */
-        $data = $classInstance->buildXmlData($doc);
-        $data->formatOutput = true;
-        $dataString = $data->saveXML();
-        static::assertEquals($expected, $dataString);
+        $classInstance->buildXmlData($doc->documentElement);
+        $doc->formatOutput = true;
+        static::assertEquals($expected, $doc->saveXML());
+    }
+
+    protected function createDocument(): DOMDocument
+    {
+        $xml = implode(PHP_EOL, [
+            '<?xml version="1.0"?>',
+            '<xmlszamla></xmlszamla>',
+        ]);
+
+        $doc = new DOMDocument();
+        $doc->loadXML($xml);
+
+        return $doc;
     }
 }

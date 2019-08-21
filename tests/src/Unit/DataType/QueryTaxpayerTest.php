@@ -8,7 +8,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\QueryTaxpayer
+ * @covers \Cheppers\SzamlazzClient\DataType\QueryTaxpayer<extended>
  */
 class QueryTaxpayerTest extends TestCase
 {

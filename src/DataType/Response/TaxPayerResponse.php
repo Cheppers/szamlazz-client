@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType\Response;
 
@@ -9,6 +9,7 @@ use DOMElement;
 
 class TaxPayerResponse
 {
+
     public static function __set_state($root)
     {
         $instance = new static();
@@ -76,7 +77,7 @@ class TaxPayerResponse
 
                         switch ($subElement->nodeName) {
                             case 'taxpayerName':
-                                $instance->taxpayerName  = $subElement->nodeValue;
+                                $instance->taxpayerName = $subElement->nodeValue;
                                 break;
 
                             case 'taxpayerAddress':

@@ -118,12 +118,7 @@ class GenerateInvoice extends RequestBase
      */
     public function buildXmlString(): string
     {
-        if ($this->isEmpty()) {
-            throw new Exception('Missing required field');
-        }
-
-        $doc = $this->getXmlBase();
-
+        $doc = $this->getXmlDocument();
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
             if (!in_array($internal, $this->requiredFields) && !$value) {
@@ -133,15 +128,19 @@ class GenerateInvoice extends RequestBase
             if ($internal === 'items') {
                 $items = $doc->createElement('tetelek');
                 foreach ($this->items as $item) {
-                    $doc = $item->buildXmlData($doc);
-                    $itemElement = $doc->getElementsByTagName('tetel')->item(0);
+                    $itemElement = $doc->createElement('tetel');
+                    $item->buildXmlData($itemElement);
                     $items->appendChild($itemElement);
                 }
                 $doc->documentElement->appendChild($items);
+
                 continue;
             }
 
-            $doc = $this->{$internal}->buildXmlData($doc);
+            /** @var \Cheppers\SzamlazzClient\DataType\Base $value */
+            $subElement = $doc->createElement($value->getComplexTypeName());
+            $doc->documentElement->appendChild($subElement);
+            $value->buildXmlData($subElement);
         }
 
         return $doc->saveXML();
