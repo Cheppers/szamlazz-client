@@ -43,58 +43,57 @@ class InvoiceHeaderTest extends BaseTestBase
             'profitVat'         => 'true',
         ];
 
-        $xml = implode(PHP_EOL, [
-            '<?xml version="1.0"?>',
-            '<xmlszamla></xmlszamla>',
-        ]);
-
         $emptyHeader = InvoiceHeader::__set_state([]);
         $basicHeader = InvoiceHeader::__set_state($values);
-        $basicXml = new DOMDocument();
-        $basicXml->loadXML($xml);
 
         return [
             'empty' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
+                    '<xmlszamla>',
+                    '  <keltDatum></keltDatum>',
+                    '  <teljesitesDatum></teljesitesDatum>',
+                    '  <fizetesiHataridoDatum></fizetesiHataridoDatum>',
+                    '  <fizmod></fizmod>',
+                    '  <penznem></penznem>',
+                    '  <szamlaNyelve></szamlaNyelve>',
+                    '</xmlszamla>',
                     '',
                 ]),
                 $emptyHeader,
-                new DOMDocument(),
+                $this->createDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
                     '<xmlszamla>',
-                    '  <fejlec>',
-                    '    <keltDatum>2019-01-01</keltDatum>',
-                    '    <teljesitesDatum>2019-01-01</teljesitesDatum>',
-                    '    <fizetesiHataridoDatum>2019-01-01</fizetesiHataridoDatum>',
-                    '    <fizmod>card</fizmod>',
-                    '    <penznem>HUF</penznem>',
-                    '    <szamlaNyelve>hu</szamlaNyelve>',
-                    '    <megjegyzes>test comment</megjegyzes>',
-                    '    <arfolyamBank>test exchange bank</arfolyamBank>',
-                    '    <arfolyam>42.5</arfolyam>',
-                    '    <rendelesSzam>on-42</rendelesSzam>',
-                    '    <dijbekeroSzamlaszam>prfn-42</dijbekeroSzamlaszam>',
-                    '    <elolegszamla>true</elolegszamla>',
-                    '    <vegszamla>false</vegszamla>',
-                    '    <helyesbitoszamla>true</helyesbitoszamla>',
-                    '    <helyesbitettSzamlaszam>corective number 42</helyesbitettSzamlaszam>',
-                    '    <dijbekero>false</dijbekero>',
-                    '    <szallitolevel>true</szallitolevel>',
-                    '    <logoExtra>extra logo</logoExtra>',
-                    '    <szamlaszamElotag>bill prefix</szamlaszamElotag>',
-                    '    <fizetendoKorrekcio>42.7</fizetendoKorrekcio>',
-                    '    <fizetve>false</fizetve>',
-                    '    <arresAfa>true</arresAfa>',
-                    '  </fejlec>',
+                    '  <keltDatum>2019-01-01</keltDatum>',
+                    '  <teljesitesDatum>2019-01-01</teljesitesDatum>',
+                    '  <fizetesiHataridoDatum>2019-01-01</fizetesiHataridoDatum>',
+                    '  <fizmod>card</fizmod>',
+                    '  <penznem>HUF</penznem>',
+                    '  <szamlaNyelve>hu</szamlaNyelve>',
+                    '  <megjegyzes>test comment</megjegyzes>',
+                    '  <arfolyamBank>test exchange bank</arfolyamBank>',
+                    '  <arfolyam>42.5</arfolyam>',
+                    '  <rendelesSzam>on-42</rendelesSzam>',
+                    '  <dijbekeroSzamlaszam>prfn-42</dijbekeroSzamlaszam>',
+                    '  <elolegszamla>true</elolegszamla>',
+                    '  <vegszamla>false</vegszamla>',
+                    '  <helyesbitoszamla>true</helyesbitoszamla>',
+                    '  <helyesbitettSzamlaszam>corective number 42</helyesbitettSzamlaszam>',
+                    '  <dijbekero>false</dijbekero>',
+                    '  <szallitolevel>true</szallitolevel>',
+                    '  <logoExtra>extra logo</logoExtra>',
+                    '  <szamlaszamElotag>bill prefix</szamlaszamElotag>',
+                    '  <fizetendoKorrekcio>42.7</fizetendoKorrekcio>',
+                    '  <fizetve>false</fizetve>',
+                    '  <arresAfa>true</arresAfa>',
                     '</xmlszamla>',
                     '',
                 ]),
                 $basicHeader,
-                $basicXml,
+                $this->createDocument(),
             ],
         ];
     }

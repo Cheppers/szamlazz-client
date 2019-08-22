@@ -16,13 +16,6 @@ class BuyerBaseTest extends BaseTestBase
     public function casesBuildXmlData()
     {
         $buyerBaseEmpty = new BuyerBase();
-        $xml = implode(PHP_EOL, [
-            '<?xml version="1.0"?>',
-            '<xmlszamla></xmlszamla>',
-        ]);
-
-        $basicDoc = new DOMDocument();
-        $basicDoc->loadXML($xml);
 
         $buyerBaseBasic = new BuyerBase();
         $buyerBaseBasic->email = 'test@test.com';
@@ -31,23 +24,24 @@ class BuyerBaseTest extends BaseTestBase
             'empty' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
+                    '<xmlszamla>',
+                    '  <email></email>',
+                    '</xmlszamla>',
                     ''
                 ]),
                 $buyerBaseEmpty,
-                new DOMDocument(),
+                $this->createDocument(),
             ],
             'basic' => [
                 implode(PHP_EOL, [
                     '<?xml version="1.0"?>',
                     '<xmlszamla>',
-                    '  <vevo>',
-                    '    <email>test@test.com</email>',
-                    '  </vevo>',
+                    '  <email>test@test.com</email>',
                     '</xmlszamla>',
                     '',
                 ]),
                 $buyerBaseBasic,
-                $basicDoc,
+                $this->createDocument(),
             ]
         ];
     }

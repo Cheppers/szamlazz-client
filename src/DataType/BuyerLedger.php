@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
-use DateTime;
-
 class BuyerLedger extends Base
 {
     /**
@@ -19,7 +17,7 @@ class BuyerLedger extends Base
     ];
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     public $bookingDate;
 

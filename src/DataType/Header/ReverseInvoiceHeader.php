@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Cheppers\SzamlazzClient\DataType\Header;
 
 use Cheppers\SzamlazzClient\DataType\Base;
-use DateTime;
 
 class ReverseInvoiceHeader extends Base
 {
@@ -25,12 +24,12 @@ class ReverseInvoiceHeader extends Base
     public $accountNumber;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     public $issueDate;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     public $fulfillmentDate;
 

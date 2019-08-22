@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Cheppers\SzamlazzClient\DataType;
 
@@ -54,18 +54,16 @@ abstract class Base
         return false;
     }
 
-    public function buildXmlData(\DOMDocument $doc): \DOMDocument
+    /**
+     * @return $this
+     */
+    public function buildXmlData(\DOMElement $element)
     {
-        if ($this->isEmpty()) {
-            return $doc;
-        }
-
-        $element = $doc->createElement($this->complexTypeName);
-
+        $doc = $element->ownerDocument;
         foreach (static::$propertyMapping as $internal => $external) {
             $value =  $this->{$internal};
 
-            if (!in_array($internal, $this->requiredFields) && !isset($value)) {
+            if (!in_array($internal, $this->requiredFields) && $value === null) {
                 continue;
             }
 
@@ -73,20 +71,19 @@ abstract class Base
                 $value = $value ? 'true' : 'false';
             }
 
-            if (is_object($value)) {
-                $value->buildXmlData($doc);
-                $subElement = $doc->getElementsByTagName($value->getComplexTypeName())->item(0);
+            if ($value instanceof Base) {
+                $subElement = $doc->createElement($value->getComplexTypeName());
+                $value->buildXmlData($subElement);
                 $element->appendChild($subElement);
+
                 continue;
             }
 
-            $newItem = new \DOMElement($external);
-
+            $newItem = $doc->createElement($external);
             $newItem->nodeValue = $value;
             $element->appendChild($newItem);
         }
-        $doc->documentElement->appendChild($element);
 
-        return $doc;
+        return $this;
     }
 }

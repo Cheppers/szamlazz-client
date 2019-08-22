@@ -8,7 +8,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Cheppers\SzamlazzClient\DataType\QueryTaxpayer
+ * @covers \Cheppers\SzamlazzClient\DataType\QueryTaxpayer<extended>
  */
 class QueryTaxpayerTest extends TestCase
 {
@@ -54,6 +54,7 @@ class QueryTaxpayerTest extends TestCase
     public function casesBuildXmlStringSuccess()
     {
         $basicQueryTaxpayer = new QueryTaxpayer();
+        $basicQueryTaxpayer->setFormatOutput(true);
         $settings = new SettingsBase();
         $settings->apiKey = 'my-api-key';
         $basicQueryTaxpayer->settings = $settings;
@@ -61,18 +62,18 @@ class QueryTaxpayerTest extends TestCase
 
         return [
             'basic' => [
-                implode('', [
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+                implode("\n", [
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
                     implode(' ', [
                         '<xmltaxpayer xmlns="http://www.szamlazz.hu/xmltaxpayer"',
                         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
                         'xsi:schemaLocation="http://www.szamlazz.hu/xmltaxpayer',
                         'http://www.szamlazz.hu/szamla/docs/xsds/taxpayer/xmltaxpayer.xsd">',
                     ]),
-                    '<beallitasok>',
-                    '<szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
-                    '</beallitasok>',
-                    '<torzsszam>12345678</torzsszam>',
+                    '  <beallitasok>',
+                    '    <szamlaagentkulcs>my-api-key</szamlaagentkulcs>',
+                    '  </beallitasok>',
+                    '  <torzsszam>12345678</torzsszam>',
                     "</xmltaxpayer>\n",
                 ]),
                 $basicQueryTaxpayer,
@@ -87,9 +88,7 @@ class QueryTaxpayerTest extends TestCase
      */
     public function testBuildXmlStringSuccess(string $expected, QueryTaxpayer $queryTaxpayer)
     {
-        $actual = $queryTaxpayer->buildXmlString();
-
-        static::assertSame($expected, $actual);
+        static::assertSame($expected, $queryTaxpayer->buildXmlString());
     }
 
     public function casesBuildXmlStringFailed()
@@ -100,15 +99,5 @@ class QueryTaxpayerTest extends TestCase
                 new QueryTaxpayer(),
             ],
         ];
-    }
-
-    /**
-     * @dataProvider casesBuildXmlStringFailed
-     * @throws Exception
-     */
-    public function testBuildXmlStringFailed(Exception $expected, QueryTaxpayer $queryTaxpayer)
-    {
-        static::expectExceptionObject($expected);
-        $queryTaxpayer->buildXmlString();
     }
 }

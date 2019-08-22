@@ -25,40 +25,28 @@ class InvoiceResponse
     {
         $instance = new static();
 
-        /** @var DOMElement $element */
-        /** @var DOMElement $subElement */
+        /** @var \DOMElement $element */
         foreach ($root->childNodes as $element) {
             if ($element->nodeType !== XML_ELEMENT_NODE) {
                 continue;
             }
 
+            $internal = array_search($element->nodeName, static::$propertyMapping);
+            if ($internal === false) {
+                continue;
+            }
+
             switch ($element->nodeName) {
                 case 'sikeres':
-                    $instance->success = $element->nodeValue === 'true' ? true : false;
+                    $instance->{$internal} = $element->nodeValue === 'true' ? true : false;
                     break;
 
                 case 'hibakod':
-                    $instance->errorCode = (int) $element->nodeValue;
+                    $instance->{$internal} = (int) $element->nodeValue;
                     break;
 
-                case 'hibauzenet':
-                    $instance->errorMessage = $element->nodeValue;
-                    break;
-
-                case 'szamlaszam':
-                    $instance->invoiceNumber = $element->nodeValue;
-                    break;
-
-                case 'szamlanetto':
-                    $instance->netPrice = $element->nodeValue;
-                    break;
-
-                case 'szamlabrutto':
-                    $instance->grossAmount = $element->nodeValue;
-                    break;
-
-                case 'pdf':
-                    $instance->pdfData = $element->nodeValue;
+                default:
+                    $instance->{$internal} = $element->nodeValue;
                     break;
             }
         }

@@ -30,33 +30,21 @@ class ReverseInvoiceResponse
                 continue;
             }
 
+            $internal = array_search($key, static::$propertyMapping);
+            if ($internal === false) {
+                continue;
+            }
+
             switch ($key) {
                 case 'szlahu_kintlevoseg':
-                    $instance->debit = (int) $values[0];
-                    break;
-
-                case 'szlahu_vevoifiokurl':
-                    $instance->buyerAccountUrl = $values[0];
-                    break;
-
                 case 'szlahu_nettovegosszeg':
-                    $instance->nettoTotal = (int) $values[0];
-                    break;
-
-                case 'szlahu_szamlaszam':
-                    $instance->accountNumber = $values[0];
-                    break;
-
                 case 'szlahu_bruttovegosszeg':
-                    $instance->grossTotal = (int) $values[0];
-                    break;
-
-                case 'szlahu_error':
-                    $instance->errorMessage = $values[0];
-                    break;
-
                 case 'szlahu_error_code':
-                    $instance->errorCode = (int) $values[0];
+                    $instance->{$internal} = (int) $values[0];
+                    break;
+
+                default:
+                    $instance->{$internal} = $values[0];
                     break;
             }
         }
