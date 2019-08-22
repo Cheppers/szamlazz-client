@@ -113,9 +113,6 @@ class GenerateInvoice extends RequestBase
         'items',
     ];
 
-    /**
-     * @throws Exception
-     */
     public function buildXmlString(): string
     {
         $doc = $this->getXmlDocument();

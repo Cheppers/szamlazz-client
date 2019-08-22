@@ -472,24 +472,4 @@ class GenerateInvoiceTest extends TestCase
     {
         static::assertSame($expected, $generateInvoice->buildXmlString());
     }
-
-    public function casesBuildXmlStringFailed()
-    {
-        return [
-            'empty' => [
-                new Exception('Missing required field'),
-                new GenerateInvoice(),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider casesBuildXmlStringFailed
-     * @throws \Exception
-     */
-    public function testBuildXmlStringFailed(\Exception $expected, GenerateInvoice $generateInvoice)
-    {
-        static::expectExceptionObject($expected);
-        $generateInvoice->buildXmlString();
-    }
 }

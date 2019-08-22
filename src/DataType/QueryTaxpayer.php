@@ -78,14 +78,12 @@ class QueryTaxpayer extends RequestBase
         $this->settings = new SettingsBase();
     }
 
-    /**
-     * @throws \Exception
-     */
     public function buildXmlString(): string
     {
         $doc = $this->getXmlDocument();
 
         foreach (static::$propertyMapping as $internal => $external) {
+            $value = $this->{$internal};
             if ($internal === 'taxpayerId') {
                 $element = $doc->createElement('torzsszam', (string) $this->taxpayerId);
                 $doc->documentElement->appendChild($element);
@@ -93,7 +91,10 @@ class QueryTaxpayer extends RequestBase
                 continue;
             }
 
-            $this->{$internal}->buildXmlData($doc);
+            /** @var \Cheppers\SzamlazzClient\DataType\Base $value */
+            $subElement = $doc->createElement($value->getComplexTypeName());
+            $doc->documentElement->appendChild($subElement);
+            $value->buildXmlData($subElement);
         }
 
         return $doc->saveXML();
