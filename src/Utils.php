@@ -17,29 +17,44 @@ class Utils
 
     public static function validateTaxpayerSuccessResponse(DOMDocument $doc): array
     {
-        $root = static::getProjectRoot();
-
-        return static::validateDocument($doc, "$root/schemas/invoiceApi.xsd");
+        return static::validateDocumentBySchema($doc, 'invoiceApi');
     }
 
     public static function validateTaxpayerErrorResponse(DOMDocument $doc): array
     {
-        $root = static::getProjectRoot();
-
-        return static::validateDocument($doc, "$root/schemas/invoiceApiError.xsd");
+        return static::validateDocumentBySchema($doc, 'invoiceApiError');
     }
 
     public static function validateInvoiceResponse(DOMDocument $doc): array
     {
-        $root = static::getProjectRoot();
-
-        return static::validateDocument($doc, "$root/schemas/xmlszamlavalasz.xsd");
+        return static::validateDocumentBySchema($doc, 'xmlszamlavalasz');
     }
 
-    public static function validateDocument(DOMDocument $doc, string $pathToXsd): array
+    /**
+     * @param \DOMDocument $doc
+     * @param string[] $schemaNames
+     *
+     * @return \LibXMLError
+     */
+    public static function validateDocumentBySchemaNames(DOMDocument $doc, array $schemaNames): array
+    {
+        $allErrors = [];
+        foreach ($schemaNames as $schemaName) {
+            $errors = static::validateDocumentBySchema($doc, $schemaName);
+            if (!$errors) {
+                return $errors;
+            }
+            
+            $allErrors[] = $errors;
+        }
+
+        return $allErrors;
+    }
+
+    public static function validateDocumentBySchema(DOMDocument $doc, string $schemaName): array
     {
         libxml_use_internal_errors(true);
-        if ($doc->schemaValidate($pathToXsd)) {
+        if ($doc->schemaValidate(static::pathToXsd($schemaName))) {
             return [];
         }
 
@@ -58,5 +73,10 @@ class Utils
         foreach ($errors as $error) {
             $logger->error($error->message);
         }
+    }
+
+    public static function pathToXsd(string $schemaName): string
+    {
+        return static::getProjectRoot() . "/schemas/$schemaName.xsd";
     }
 }

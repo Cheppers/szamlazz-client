@@ -210,7 +210,10 @@ class SzamlazzClientTest extends TestCase
                 '',
             ],
             'invalid response' => [
-                new Exception('Invalid response', 57),
+                new Exception(
+                    "Document doesn't match to any of the following schemas: invoiceApi, invoiceApiError",
+                    57
+                ),
                 QueryTaxpayer::__set_state([
                     'settings' => [
                         'apiKey' => 'my-api-key',
@@ -603,7 +606,7 @@ class SzamlazzClientTest extends TestCase
                 '',
             ],
             'invalid response' => [
-                new Exception('Invalid response', 57),
+                new Exception("Document doesn't match to any of the following schemas: xmlszamlavalasz", 57),
                 GenerateInvoice::__set_state([
                     'settings' => [
                         'apiKey'               => 'my-test-api-key',

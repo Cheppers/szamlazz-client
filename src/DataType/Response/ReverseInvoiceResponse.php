@@ -21,6 +21,9 @@ class ReverseInvoiceResponse
         'errorCode'       => 'szlahu_error_code',
     ];
 
+    /**
+     * @todo Use parameters (array $header, ?string $body).
+     */
     public static function __set_state(ResponseInterface $response): ReverseInvoiceResponse
     {
         $instance = new static();

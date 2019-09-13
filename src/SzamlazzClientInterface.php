@@ -23,7 +23,7 @@ interface SzamlazzClientInterface
 
     public function getTaxpayer(QueryTaxpayer $queryTaxpayer): ?TaxPayerResponse;
 
-    public function generateInvoice(GenerateInvoice $invoice): ?InvoiceResponse;
+    public function generateInvoice(GenerateInvoice $invoice): InvoiceResponse;
 
-    public function generateReverseInvoice(GenerateReverseInvoice $reverseInvoice): ?ReverseInvoiceResponse;
+    public function generateReverseInvoice(GenerateReverseInvoice $reverseInvoice): ReverseInvoiceResponse;
 }

@@ -10,12 +10,17 @@ use DOMElement;
 class TaxPayerResponse
 {
 
+    /**
+     * @param \DOMElement $root
+     *
+     * @return static
+     */
     public static function __set_state($root)
     {
         $instance = new static();
 
-        /** @var DOMElement $element */
-        /** @var DOMElement $subElement */
+        /** @var \DOMElement $element */
+        /** @var \DOMElement $subElement */
         foreach ($root->childNodes as $element) {
             if ($element->nodeType !== XML_ELEMENT_NODE) {
                 continue;
